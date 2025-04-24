@@ -49,7 +49,7 @@ class Background extends Scene {
         scene.environment = this.cubeMap.texture;
 
         //add in the light probe
-        scene.add(this.probe);
+        //scene.add(this.probe);
     }
 
 }

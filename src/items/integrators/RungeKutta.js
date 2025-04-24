@@ -1,58 +1,75 @@
-const defaultStop = function(state){
-    return false;
-}
+/* GeodesicIntegrator.js ------------------------------------------- */
+import { Vector2 } from 'three';
+import {TangentVector} from "./TangentVector.js";
 
 
+export default class RungeKutta {
 
-class RungeKuttaIntegrator{
-
-    constructor (derive, ep=0.1, stop=defaultStop){
-            this.derive=derive;
-            this.ep=ep;
-            this.stop=stop;
+    /** @param {Function} acc  (state:TangentVector)→Vector2  -- the geodesic acceleration
+     @param {number}   eps  step size Δt  */
+    constructor( acc, eps = 1e-2 ) {
+        this.acc = acc;
+        this.eps = eps;
     }
 
-    //step forwards one timestep
-    step(state){
+    /** single RK-4 step   s  →  s′   */
+    step( s ) {
 
-            let k1,k2,k3,k4;
-            let temp;
+        const h = this.eps;
 
-            //get the derivative
-            k1 = this.derive(state);
-            k1.multiplyScalar(this.ep);
+        // --- k1  ------------------------------------------------------
+        const k1_pos = s.vel.clone();          // du/dt , dv/dt
+        const k1_vel = this.acc( s ).clone();  // ü , v̈
 
-            //get k2
-            temp=state.clone().add(k1.clone().multiplyScalar(0.5));
-            k2=this.derive(temp);
-            k2.multiplyScalar(this.ep);
+        // --- k2 -------------------------------------------------------
+        const s2 = s.clone();
+        s2.pos.addScaledVector( k1_pos, 0.5*h );
+        s2.vel.addScaledVector( k1_vel, 0.5*h );
 
-            //get k3
-            temp=state.clone().add(k2.clone().multiplyScalar(0.5));
-            k3=this.derive(temp);
-            k3.multiplyScalar(this.ep);
+        const k2_pos = s2.vel.clone();
+        const k2_vel = this.acc( s2 ).clone();
 
-            //get k4
-            temp=state.clone().add(k3.multiplyScalar(1.));
-            k4=this.derive(temp);
-            k4.multiplyScalar(this.ep);
+        // --- k3 -------------------------------------------------------
+        const s3 = s.clone();
+        s3.pos.addScaledVector( k2_pos, 0.5*h );
+        s3.vel.addScaledVector( k2_vel, 0.5*h );
 
-            //add up results:
-            let total = k1;//scale factor 1
-            total.add(k2.multiplyScalar(2));
-            total.add(k3.multiplyScalar(2));
-            total.add(k4);//scale factor 1
-            total.multiplyScalar(1/6);
+        const k3_pos = s3.vel.clone();
+        const k3_vel = this.acc( s3 ).clone();
 
-            //move ahead one step
-            let nextState = state.clone().add(total);
+        // --- k4 -------------------------------------------------------
+        const s4 = s.clone();
+        s4.pos.addScaledVector( k3_pos, h );
+        s4.vel.addScaledVector( k3_vel, h );
 
+        const k4_pos = s4.vel.clone();
+        const k4_vel = this.acc( s4 ).clone();
 
-            return nextState;
+        // --- combine --------------------------------------------------
+        const posInc = new Vector2()
+            .addScaledVector( k1_pos, 1 )
+            .addScaledVector( k2_pos, 2 )
+            .addScaledVector( k3_pos, 2 )
+            .addScaledVector( k4_pos, 1 )
+            .multiplyScalar( h / 6 );
 
+        const velInc = new Vector2()
+            .addScaledVector( k1_vel, 1 )
+            .addScaledVector( k2_vel, 2 )
+            .addScaledVector( k3_vel, 2 )
+            .addScaledVector( k4_vel, 1 )
+            .multiplyScalar( h / 6 );
+
+        return new TangentVector(
+            s.pos.clone().add( posInc ),
+            s.vel.clone().add( velInc )
+        );
     }
 
+    /** integrate for *n* steps (convenience) */
+    integrate( state, n = 1 ) {
+        let s = state;
+        for ( let i = 0; i < n; ++i ) s = this.step( s );
+        return s;
+    }
 }
-
-
-export default RungeKuttaIntegrator;

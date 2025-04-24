@@ -1,15 +1,13 @@
 import {
-    ACESFilmicToneMapping,
     Clock,
     PerspectiveCamera,
     PMREMGenerator,
     Scene,
     WebGLRenderer,
-    EquirectangularReflectionMapping,
-    SRGBColorSpace, LightProbe
+    SRGBColorSpace,
 } from "three";
 import {OrbitControls} from "three/addons";
-import {EffectComposer, SobelOperatorShader, ShaderPass, RenderPass,LuminosityShader,} from "three/addons";
+import {EffectComposer, RenderPass,} from "three/addons";
 import {GUI} from "three/addons/libs/lil-gui.module.min.js";
 
 
