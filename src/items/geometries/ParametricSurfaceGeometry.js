@@ -16,7 +16,7 @@ let defaultFn = function(u,v){
 
 export default class ParametricSurfaceGeometry extends BufferGeometry {
 
-    constructor( f=defaultFn, domain=[[0,1],[0,1]], slices = 8, stacks = 8 ) {
+    constructor( f=defaultFn, domain=[[0,1],[0,1]], slices = 64, stacks = 64 ) {
 
         super();
 

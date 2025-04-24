@@ -12,7 +12,7 @@ export default class Geodesic extends NumericalCurve{
 
     }
 
-    update(tv){
+    update( tv=this.tv ){
         this.tv = tv;
         let pts = this.surface.integrateGeodesic(tv);
         this.redraw(pts);

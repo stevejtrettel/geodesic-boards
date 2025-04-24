@@ -1,13 +1,13 @@
 /* GeodesicIntegrator.js ------------------------------------------- */
 import { Vector2 } from 'three';
-import {TangentVector} from "./TangentVector.js";
+import TangentVector from "./TangentVector.js";
 
 
 export default class RungeKutta {
 
     /** @param {Function} acc  (state:TangentVector)→Vector2  -- the geodesic acceleration
      @param {number}   eps  step size Δt  */
-    constructor( acc, eps = 1e-2 ) {
+    constructor( acc, eps = 0.01 ) {
         this.acc = acc;
         this.eps = eps;
     }
