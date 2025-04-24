@@ -29,7 +29,7 @@ export default class Surface {
         }
 
 
-        this.acceleration = (tv) => {
+        this.geodesicAcceleration = (tv) => {
 
             let u =  tv.pos.x;
             let v =  tv.pos.y;
@@ -49,8 +49,40 @@ export default class Surface {
             return new Vector2(fu,fv).multiplyScalar(coef);
         };
 
+        this.geodesicIntegrator = new RungeKutta(this.geodesicAcceleration,0.01);
 
-        this.integrator = new RungeKutta(this.acceleration,0.01);
+        //parallel transport of X along tangent vector tv
+        this.transportDerivative = (tv, X) =>{
+            let u =  tv.pos.x;
+            let v =  tv.pos.y;
+            let uP = tv.vel.x;
+            let vP = tv.vel.y;
+
+            let fu = this.fu(u,v);
+            let fv = this.fv(u,v);
+            let fuv = this.fuv(u,v);
+            let fuu = this.fuu(u,v);
+            let fvv = this.fvv(u,v);
+
+            let Xu = X.x;
+            let Xv = X.y;
+
+            let denom = 1+ fu*fu + fv*fv;
+
+            let Guuu = (fu*(fuu-fu*fv*fuv+fv*fv*fvv))/denom;
+            let Gvvv = (fv*(fvv-fu*fv*fuv+fu*fu*fuu))/denom;
+            let Guvu = (fu*fuv)/denom;
+            let Guvv = (fv*fuv)/denom;
+            let Guuv = (fuu*fv)/denom;
+            let Gvvu = (fvv*fu)/denom;
+
+            let XuP = -uP*(Guuu*Xu + Guvu*Xv) - vP*(Guvu*Xu + Gvvu*Xv);
+            let XvP = -uP*(Guuv*Xu + Guvv*Xv) - vP*(Guvv*Xu + Gvvv*Xv);
+
+            return new Vector2(XuP,XvP);
+        }
+
+
 
     }
 
@@ -73,8 +105,8 @@ export default class Surface {
 
         let temp=tv.clone();
         let x,y,z;
-        for(let i=0; i<200; i++){
-            temp = this.integrator.step(temp);
+        for(let i=0; i<300; i++){
+            temp = this.geodesicIntegrator.step(temp);
             if(this.stop(temp.pos)){break;}
 
             x = temp.pos.x;
@@ -83,13 +115,15 @@ export default class Surface {
             pts.push([x,y,z]);
 
         }
-
         return pts;
     }
 
+    interpolateTransport(curve){
+        //returns an interpolating function along the curve
+        //interpolating function takes in a time (along curve) and outputs two vectors
+        //the parallel transport of (1,0) and (0,1) along the curve
 
 
-
-
+    }
 
 }

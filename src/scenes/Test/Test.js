@@ -21,12 +21,14 @@ class Test extends Vignette {
     constructor() {
         super();
 
-
+        this.params = {
+            a:1,
+            b:1,
+        };
 
         //build the surface we will work with
-        let f = (x,y)=> Math.sin(x)*Math.sin(y);
-        let twopi = 2*Math.PI;
-        let dom = [[-twopi, twopi],[-twopi,twopi]];
+        let f = (x,y) => this.params.a*Math.exp(-x*x-y*y);
+        let dom = [[-2,2],[-2,2]];
 
         let derivatives = {
             fu: (u,v)=> Math.cos(u)*Math.sin(v),
@@ -36,22 +38,39 @@ class Test extends Vignette {
             fuv: (u,v)=>  Math.cos(u)*Math.cos(v),
         }
 
-        let surf = new Surface(f,dom,derivatives);
+        let surf = new Surface(f,dom);
 
         //make the block
         this.block = new WoodBlock(surf);
 
         //make the geodesic
-        let tv = new TangentVector(new Vector2(0,0),new Vector2(1,1));
+        let tv = new TangentVector(new Vector2(1,-1),new Vector2(-0.2,1));
 
         this.geo = new Geodesic(tv,surf);
-
 
     }
 
     addToScene(scene){
-      //  scene.add(this.block);
+        scene.add(this.block);
         scene.add(this.geo);
+    }
+
+    addToUI(ui){
+
+        let geo = this.geo;
+        let block = this.block;
+
+        ui.add(this.params,'a',0,2,0.01).onChange(value=> {
+            this.geo.update();
+            this.block.update();
+        });
+    }
+
+
+    tick(time,dTime){
+        let v = new Vector2(Math.cos(time),Math.sin(time));
+        let tv = new TangentVector(new Vector2(1,-1),v);
+        this.geo.update(tv);
     }
 
 }
