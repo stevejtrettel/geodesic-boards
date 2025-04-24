@@ -1,4 +1,4 @@
-
+import {Vector2} from "three";
 
 //producing interpolating functions
 
@@ -46,4 +46,29 @@ function createInterpolator(xs, ys, tension = 0.5) {
     };
 }
 
-export {createInterpolator}
+
+function createInterpolator2(ts,vec2s){
+
+    if (ts.length !== vec2s.length || ts.length < 2) {
+        throw new Error("Input and output arrays must have the same length and contain at least two points.");
+    }
+
+    let us = [];
+    let vs = [];
+
+    for(let i=0; i<ts.length; i++){
+        us.push(vec2s[i].x);
+        vs.push(vec2s[i].y);
+    }
+
+    let uInterpolate = createInterpolator(ts,us);
+    let vInterpolate = createInterpolator(ts,vs);
+
+    return function(t){
+        let u = uInterpolate(t);
+        let v = vInterpolate(t);
+        return new Vector2(u,v);
+    }
+}
+
+export {createInterpolator,createInterpolator2}

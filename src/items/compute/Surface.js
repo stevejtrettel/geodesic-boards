@@ -1,5 +1,11 @@
-import {Vector2,Vector3} from "three";
-import RungeKutta from "../integrators/RungeKutta.js";
+import {Vector2, Vector3} from "three";
+import AccelerationIntegrator from "../integrators/AccelerationIntegrator.js";
+import TransportIntegrator from "../integrators/TransportIntegrator.js";
+import {createInterpolator2} from "./interpolators.js";
+import Curve from "./Curve.js";
+import TangentVector from "../integrators/TangentVector";
+
+
 
 //takes in an equation (x,y)->f(x,y)
 //the function should also allow the input of parameters a,b,c or something
@@ -29,7 +35,10 @@ export default class Surface {
         }
 
 
-        this.geodesicAcceleration = (tv) => {
+
+        //the geodesic integrator
+
+        this.acceleration = (tv) => {
 
             let u =  tv.pos.x;
             let v =  tv.pos.y;
@@ -49,10 +58,14 @@ export default class Surface {
             return new Vector2(fu,fv).multiplyScalar(coef);
         };
 
-        this.geodesicIntegrator = new RungeKutta(this.geodesicAcceleration,0.01);
+        this.geodesicFlow = new AccelerationIntegrator(this.acceleration,0.01);
 
-        //parallel transport of X along tangent vector tv
-        this.transportDerivative = (tv, X) =>{
+
+
+        //the parallel transport integrator
+
+        // transport of X along tangent vector tv
+        this.dTransport = (tv, X) =>{
             let u =  tv.pos.x;
             let v =  tv.pos.y;
             let uP = tv.vel.x;
@@ -82,7 +95,8 @@ export default class Surface {
             return new Vector2(XuP,XvP);
         }
 
-
+        this.bdyCurve = new Curve(t=> new Vector2(this.domain[0][0]+t*(this.domain[0][1]-this.domain[0][0]),this.domain[1][0]));
+        this.bdyTransport = this.getParallelTransport(this.bdyCurve);
 
     }
 
@@ -106,7 +120,7 @@ export default class Surface {
         let temp=tv.clone();
         let x,y,z;
         for(let i=0; i<300; i++){
-            temp = this.geodesicIntegrator.step(temp);
+            temp = this.geodesicFlow.step(temp);
             if(this.stop(temp.pos)){break;}
 
             x = temp.pos.x;
@@ -118,12 +132,52 @@ export default class Surface {
         return pts;
     }
 
-    interpolateTransport(curve){
+    getParallelTransport(curve){
         //returns an interpolating function along the curve
         //interpolating function takes in a time (along curve) and outputs two vectors
         //the parallel transport of (1,0) and (0,1) along the curve
 
+        let integrator = new TransportIntegrator(curve, this.dTransport);
 
+        let X = new Vector2(1,0);
+        let Y = new Vector2(0,1);
+
+        let Xpts = [X];
+        let Ypts = [Y];
+        let tpts = [0];
+
+        let currentX = X;
+        let currentY = Y;
+        for(let i=0; i<100; i++){
+            let t = i/100;
+
+            currentX = integrator.step(t,currentX);
+            currentY = integrator.step(t,currentY);
+
+            tpts.push(t);
+            Xpts.push(currentX);
+            Ypts.push(currentY);
+
+        }
+
+        //now build the interpolating functions:
+        let interpolateX = createInterpolator2(tpts,Xpts);
+        let interpolateY = createInterpolator2(tpts,Ypts);
+
+        let parallelTransport = (t,V) => {
+            let X =  interpolateX(t);
+            let Y =  interpolateY(t);
+            let a = V.x;
+            let b = V.y;
+            return X.multiplyScalar(a).add(Y.multiplyScalar(b));
+           }
+
+        //return the interpolating function:
+        return parallelTransport;
+    }
+
+    boundaryTransport(t,V){
+        return new TangentVector(this.bdyCurve.getPoint(t), this.bdyTransport(t,V));
     }
 
 }
