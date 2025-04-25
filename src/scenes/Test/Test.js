@@ -11,7 +11,6 @@ import Surface from "../../items/compute/Surface.js";
 import Geodesic from "../../items/components/Geodesic.js";
 import TangentVector from "../../items/integrators/TangentVector.js";
 import WoodBlock from "../../items/components/WoodBlock.js";
-import Curve from "../../items/compute/Curve.js";
 import GeodesicSpray from "../../items/components/GeodesicSpray.js";
 import GeodesicStripes from "../../items/components/GeodesicStripes.js";
 
@@ -59,25 +58,11 @@ class Test extends Vignette {
         this.stripes = new GeodesicStripes(surf);
 
 
-
-        //make an array of geodesics, with different starting conditions!
-        // this.geodesics = []
-        // for(let i=1; i<10; i++){
-        //     let t=i/10;
-        //     let V = new Vector2(0.3,1).normalize();
-        //     let tv = surf.boundaryTransport(t,V);
-        //     let geodesic = new Geodesic(surf,tv);
-        //     this.geodesics.push(geodesic);
-        // }
-
     }
 
     addToScene(scene){
         scene.add(this.block);
         scene.add(this.geo);
-        // for(let i=1; i<10;i++){
-        //     scene.add(this.geodesics[i-1]);
-        // }
         scene.add(this.spray);
         scene.add(this.stripes);
     }

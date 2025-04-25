@@ -1,0 +1,52 @@
+import {Group} from "three";
+import Geodesic from "./Geodesic.js";
+
+//abstract class for different geodesic collections
+//geodesic spray and stripes are examples
+export default class GeodesicArray extends Group{
+    constructor(surface, N =10, properties, material) {
+
+        super();
+
+        this.surface = surface;
+        this.N = N;
+        this.properties = properties;
+        this.material = material;
+
+        this.ini = new Array(this.N);
+        this.setIni();
+
+        this.geodesics = [];
+        for(let i=0;i<this.N;i++) {
+            let geo = new Geodesic(this.surface, this.ini[i], this.properties.radius, this.material)
+            this.geodesics.push(geo);
+            //add to the group
+            this.add(geo);
+        }
+
+    }
+
+    setIni(){
+        //this is the class that needs to be instantiated!
+        console.log('This is an abstract class: need to instantiate this.setIni()');
+    }
+
+    redraw(){
+        this.setIni();
+        for(let i=0;i<this.N;i++) {
+            this.geodesics[i].update(this.ini[i]);
+        }
+    }
+
+    update(properties){
+
+        for(const [key,value] of Object.entries(properties)){
+            if(this.properties.hasOwnProperty(key)){
+                this.properties[key]=value;
+            }
+        }
+        this.redraw();
+    }
+
+
+}
