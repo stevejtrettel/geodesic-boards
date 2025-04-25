@@ -1,6 +1,7 @@
 {
   "type": "module",
   "dependencies": {
+    "mathjs": "^14.4.0",
     "three": "^0.175.0",
     "three-custom-shader-material": "^6.3.5",
     "three-gpu-pathtracer": "^0.0.23"

@@ -13,15 +13,23 @@ import TangentVector from "../../items/integrators/TangentVector.js";
 import WoodBlock from "../../items/components/WoodBlock.js";
 import GeodesicSpray from "../../items/components/GeodesicSpray.js";
 import GeodesicStripes from "../../items/components/GeodesicStripes.js";
+import {mathToGLSL} from "../../items/utils/mathToGLSL.js";
 
 const testParams = {
     first: 0,
 }
 
+/* --- demo ------------------------------------------------------ */
+console.log( mathToGLSL('atan2(y,x) + 3^n - ln(2)') );
+// → "atan(y, x) + pow(3.0, n) - log(2.0)"
+
+
 class Test extends Vignette {
 
     constructor() {
         super();
+
+
 
         this.params = {
             a:1,
