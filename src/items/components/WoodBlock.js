@@ -14,7 +14,7 @@ export default class WoodBlock extends Group{
 
         this.surface = surface;
 
-        this.graph = new ParametricSurface(surface.parametricEqn, surface.domain)
+        this.graph = new ParametricSurface(surface.parametricEqn, surface.domain,material)
         this.add(this.graph)
     }
 

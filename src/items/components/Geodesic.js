@@ -2,9 +2,10 @@ import NumericalCurve from "../meshes/NumericalCurve.js";
 
 
 export default class Geodesic extends NumericalCurve{
-    constructor(tv, surface, radius, material ) {
+    constructor(surface, tv, radius, material ) {
 
         let pts = surface.integrateGeodesic(tv);
+
         super(pts, radius, material);
 
         this.tv = tv;
