@@ -3,7 +3,7 @@ import {
     MeshNormalMaterial,
     Mesh, MeshPhysicalMaterial,
     Vector3,
-    Vector2, Group,
+    Vector2, Group, DoubleSide,
 } from "three";
 
 import Vignette from "../../items/Vignette.js";
@@ -31,21 +31,23 @@ class Test extends Vignette {
 
         //build the surface we will work with
         let f = (x,y) => this.params.a*Math.exp(-x*x-y*y);
-        let dom = [[-2,2],[-2,2]];
+            ///this.params.a*Math.sin(2*x)*Math.sin(2*y);
+            //
+        let dom = [[-2,2],[-3,3]];
 
         let derivatives = {
-            fu: (u,v)=> Math.cos(u)*Math.sin(v),
-            fv: (u,v)=> Math.sin(u)*Math.cos(v),
-            fuu: (u,v)=> -Math.sin(u)*Math.sin(v),
-            fvv: (u,v)=> -Math.sin(u)*Math.sin(v),
-            fuv: (u,v)=>  Math.cos(u)*Math.cos(v),
+            fu: (u,v)=> 2*this.params.a*Math.cos(2*u)*Math.sin(2*v),
+            fv: (u,v)=> 2*this.params.a*Math.sin(2*u)*Math.cos(2*v),
+            fuu: (u,v)=> -4*this.params.a*Math.sin(2*u)*Math.sin(2*v),
+            fvv: (u,v)=> -4*this.params.a*Math.sin(2*u)*Math.sin(2*v),
+            fuv: (u,v)=>  4*this.params.a*Math.cos(2*u)*Math.cos(2*v),
         }
 
         let surf = new Surface(f,dom);
         this.surf = surf;
 
         //make the block
-        let woodMat = new MeshPhysicalMaterial({color:0x2733e3, clearcoat:1,});
+        let woodMat = new MeshPhysicalMaterial({color:0x2733e3, clearcoat:1,side:DoubleSide});
         this.block = new WoodBlock(surf,woodMat);
 
         //make the geodesic

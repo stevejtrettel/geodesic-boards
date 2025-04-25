@@ -1,5 +1,7 @@
-import {Group,MeshPhysicalMaterial} from "three";
+import {DoubleSide, Group, MeshPhysicalMaterial} from "three";
 import ParametricSurface from "../meshes/ParametricSurface.js";
+import CustomShaderMaterial from "three-custom-shader-material/vanilla";
+
 
 let defaultMaterial = new MeshPhysicalMaterial({
     color:0xffffff,
@@ -14,7 +16,22 @@ export default class WoodBlock extends Group{
 
         this.surface = surface;
 
-        this.graph = new ParametricSurface(surface.parametricEqn, surface.domain,material)
+
+        const pbrMat = new MeshPhysicalMaterial({ metalness: 0, roughness: 0.3,side:DoubleSide });
+
+        const csm = new CustomShaderMaterial({
+            baseMaterial: pbrMat,
+            vertexShader: ``,
+            fragmentShader: `
+        void main() {
+            csm_DiffuseColor.rgb =vec3(1,0,0);   // modulate base colour
+        }`,
+            uniforms: { size: { value: 1 } }
+        });
+
+
+
+        this.graph = new ParametricSurface(surface.parametricEqn, surface.domain,csm)
         this.add(this.graph)
     }
 
@@ -22,3 +39,4 @@ export default class WoodBlock extends Group{
         this.graph.redraw(this.surface.parametricEqn);
     }
 }
+

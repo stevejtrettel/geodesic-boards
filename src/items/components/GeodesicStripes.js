@@ -22,7 +22,6 @@ export default class GeodesicStripes extends GeodesicArray{
         for(let i=0; i<this.N; i++){
             let offset = i/this.N-0.5;
             let t = this.properties.pos+this.properties.spread*offset;
-            console.log(this.surface.boundaryTransport(t,V));
             this.ini[i] = this.surface.boundaryTransport(t,V);
         }
     }

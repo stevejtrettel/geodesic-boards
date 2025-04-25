@@ -1,5 +1,6 @@
 import {Vector2, Vector3} from "three";
-import AccelerationIntegrator from "../integrators/AccelerationIntegrator.js";
+import RungeKutta from "../integrators/RungeKutta.js";
+import Symplectic2 from "../integrators/Symplectic2.js";
 import TransportIntegrator from "../integrators/TransportIntegrator.js";
 import {createInterpolator2} from "./interpolators.js";
 import Curve from "./Curve.js";
@@ -52,13 +53,13 @@ export default class Surface {
             let fvv = this.fvv(u,v);
 
             let num = fuu*uP*uP + 2*fuv*uP*vP + fvv*vP*vP;
-            let denom = 1+ fuu*fuu + fvv*fvv;
+            let denom = 1+ fu*fu + fv*fv;
             let coef = -num/denom;
 
             return new Vector2(fu,fv).multiplyScalar(coef);
         };
 
-        this.geodesicFlow = new AccelerationIntegrator(this.acceleration,0.01);
+        this.geodesicFlow = new Symplectic2(this.acceleration,0.02);
 
 
 

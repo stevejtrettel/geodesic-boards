@@ -3,7 +3,7 @@ import { Vector2 } from 'three';
 import TangentVector from "./TangentVector.js";
 
 
-export default class AccelerationIntegrator {
+export default class RungeKutta {
 
     //acc: TangentVector → Vector2  -- the geodesic acceleration
     constructor( acc, eps = 0.01 ) {
