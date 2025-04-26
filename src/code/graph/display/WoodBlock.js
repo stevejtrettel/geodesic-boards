@@ -1,8 +1,8 @@
 import {DoubleSide, Group, MeshPhysicalMaterial} from "three";
-import ParametricSurface from "../meshes/ParametricSurface.js";
-import CustomShaderMaterial from "three-custom-shader-material/vanilla";
-import ShaderSurface from "../meshes/ShaderSurface.js";
-import {toGLSL} from "../utils/toGLSL";
+import ParametricSurface from "../../components/meshes/ParametricSurface.js";
+// import CustomShaderMaterial from "three-custom-shader-material/vanilla";
+// import ShaderSurface from "../meshes/ShaderSurface.js";
+// import {toGLSL} from "../utils/toGLSL";
 
 
 let defaultMaterial = new MeshPhysicalMaterial({
@@ -17,9 +17,9 @@ export default class WoodBlock extends Group{
         super();
 
         this.surface = surface;
-        this.graph = new ShaderSurface(surface.math,surface.domain);
+        //this.graph = new ShaderSurface(surface.math,surface.domain);
 
-        // const pbrMat = new MeshPhysicalMaterial({ metalness: 0, roughness: 0.3,side:DoubleSide });
+         const pbrMat = new MeshPhysicalMaterial({ color: 0xff2a00, metalness: 0, roughness: 0.3,side:DoubleSide });
         //
         // const csm = new CustomShaderMaterial({
         //     baseMaterial: pbrMat,
@@ -31,15 +31,18 @@ export default class WoodBlock extends Group{
         //     uniforms: { size: { value: 1 } }
         // });
         //
-        // this.graph = new ParametricSurface(surface.math.parametric, surface.domain,csm);
-        //
+         this.graph = new ParametricSurface(surface.math.parametric, surface.domain,pbrMat);
 
         this.add(this.graph)
     }
 
+    redraw(){
+        // this.graph.rebuild();
+        this.graph.redraw(this.surface.math.parametric);
+    }
+
     update(){
-        this.graph.rebuild();
-        //this.graph.redraw(this.surface.math.parametric);
+        this.graph.redraw(this.surface.math.parametric);
     }
 
 }
