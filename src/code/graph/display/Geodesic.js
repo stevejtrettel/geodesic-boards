@@ -1,4 +1,4 @@
-import NumericalCurve from "../meshes/NumericalCurve.js";
+import NumericalCurve from "../../components/meshes/NumericalCurve.js";
 
 
 export default class Geodesic extends NumericalCurve{

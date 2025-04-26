@@ -7,6 +7,7 @@ export function compileMath (
     src,
     { vars = ['x', 'y'], params = ['a'], paramsObj } = {}
 ) {
+
     const node  = math.parse(src);       // ⇢ AST
     const vSet  = new Set(vars);
     const pSet  = new Set(params);

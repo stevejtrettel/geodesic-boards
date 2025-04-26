@@ -4,13 +4,12 @@ import {
     DoubleSide,
 } from "three";
 
-import Vignette from "../../items/Vignette.js";
-import Surface from "../../items/compute/Surface.js";
-import Geodesic from "../../items/components/Geodesic.js";
-import TangentVector from "../../items/integrators/TangentVector.js";
-import WoodBlock from "../../items/components/WoodBlock.js";
-import GeodesicSpray from "../../items/components/GeodesicSpray.js";
-import GeodesicStripes from "../../items/components/GeodesicStripes.js";
+import Vignette from "../../code/Vignette.js";
+import Surface from "../../code/graph/compute/Surface.js";
+import TangentVector from "../../code/components/integrators/TangentVector.js";
+import WoodBlock from "../../code/graph/display/WoodBlock.js";
+import GeodesicSpray from "../../code/graph/display/GeodesicSpray.js";
+import GeodesicStripes from "../../code/graph/display/GeodesicStripes.js";
 
 
 
@@ -18,7 +17,6 @@ class Test extends Vignette {
 
     constructor() {
         super();
-
 
         this.eqn = `a*exp(-x^2-y^2)+sin(b*x)*sin(b*y)/4.`;
 
@@ -75,8 +73,9 @@ class Test extends Vignette {
     addToUI(ui){
 
         ui.add(this,'eqn').onFinishChange(value=> {
-            this.surf.rebuild(value);
-            this.block.update();
+            this.eqn=value;
+            this.surf.rebuild(this.eqn);
+            this.block.redraw();
             this.animateParams.needsUpdate=true;
         });
 
@@ -122,6 +121,7 @@ class Test extends Vignette {
         if(this.animateParams.needsUpdate){
             this.stripes.redraw();
             this.spray.redraw();
+            this.block.update();
             this.animateParams.needsUpdate=false;
         }
     }
