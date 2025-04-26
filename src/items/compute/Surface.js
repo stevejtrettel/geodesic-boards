@@ -4,14 +4,14 @@ import TransportIntegrator    from '../integrators/TransportIntegrator.js';
 import { createInterpolator2 } from './interpolators.js';
 import Curve                  from './Curve.js';
 import TangentVector          from '../integrators/TangentVector.js';
-import SurfaceMath            from './SurfaceMath.js';
+import DiffGeo            from './DiffGeo.js';
 
 export default class Surface {
 
     constructor(eqn, domain = [[0, 1],[0, 1]], parameters = {}, hGeo = 0.02) {
 
         this.domain = domain;
-        this.math   = new SurfaceMath(eqn, parameters);
+        this.math   = new DiffGeo(eqn, parameters);
 
         /* ----------------------------------------------------------------
          * 0.  Domain guard
@@ -48,13 +48,10 @@ export default class Surface {
             basisX.push(X.clone());
             basisY.push(Y.clone());
         }
-
         const interpX = createInterpolator2(tPts, basisX);
         const interpY = createInterpolator2(tPts, basisY);
 
-        this.bdyTransport = (t, V) =>
-            interpX(t).clone().multiplyScalar(V.x)
-                .add(interpY(t).clone().multiplyScalar(V.y));
+        this.transportedBasis = (t) => [ interpX(t), interpY(t)];
     }
 
     /* --------------------------------------------------------------------
@@ -80,7 +77,16 @@ export default class Surface {
      * Parallel transport of a vector V based at t ∈ [0,1] on boundary curve
      * -------------------------------------------------------------------- */
     boundaryTransport(t, V) {
-        const transported = this.bdyTransport(t, V);
-        return new TangentVector(this.bdyCurve.getPoint(t), transported);
+        let basis = this.transportedBasis(t);
+        let transportedV = basis[0].multiplyScalar(V.x).add(basis[1].multiplyScalar(V.y));
+        return new TangentVector(this.bdyCurve.getPoint(t), transportedV);
     }
+
+
+
+    rebuild(eqn){
+        //rebuild with a new equation
+        this.math.rebuild(eqn);
+    }
+
 }

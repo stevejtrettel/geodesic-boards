@@ -32,19 +32,19 @@ export default class GeodesicArray extends Group{
     }
 
     redraw(){
-        this.setIni();
         for(let i=0;i<this.N;i++) {
             this.geodesics[i].update(this.ini[i]);
         }
     }
 
-    update(properties){
+    update(properties={}){
 
         for(const [key,value] of Object.entries(properties)){
             if(this.properties.hasOwnProperty(key)){
                 this.properties[key]=value;
             }
         }
+        this.setIni();
         this.redraw();
     }
 

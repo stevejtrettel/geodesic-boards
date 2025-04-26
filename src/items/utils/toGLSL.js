@@ -51,56 +51,111 @@ function tokenize(src){
 /*--------------------------------------------------------------*
  * 2.  Very small AST parser                                    *
  *--------------------------------------------------------------*/
-class Parser{
-    constructor(tokens){ this.t=tokens; this.i=0; }
-    peek(){ return this.t[this.i]; }
-    eat(type){ const k=this.t[this.i];
-        if(!k||k.type!==type) throw SyntaxError(`expected ${type}`);
-        this.i++; return k; }
+class Parser {
+    constructor(tokens) { this.t = tokens; this.i = 0; }
+    peek() { return this.t[this.i]; }
+    eat(type) {
+        const tok = this.t[this.i];
+        if (!tok || tok.type !== type)
+            throw SyntaxError(`expected ${type}, got ${tok?.type}`);
+        this.i++;
+        return tok;
+    }
 
-    parse(){ const e=this.expr(); if(this.i<this.t.length)
-        throw SyntaxError('extra input'); return e; }
+    parse() {
+        const e = this.expr();
+        if (this.i < this.t.length) throw SyntaxError('extra input');
+        return e;
+    }
 
-    expr(){ let n=this.term();
-        while(this.peek() && ['+','-'].includes(this.peek().type)){
-            const op=this.eat(this.peek().type).type;
-            n={op,left:n,right:this.term()};
-        } return n; }
-
-    term(){ let n=this.power();
-        while(true){
-            const k=this.peek();
-            if(k && (k.type==='*'||k.type==='/'||
-                k.type==='('||k.type==='num'||k.type==='id')){
-                const op=(k.type==='*'||k.type==='/')? this.eat(k.type).type : '*';
-                n={op,left:n,right:this.power()};
-            } else break;
-        } return n; }
-
-    power(){ let n=this.factor();
-        if(this.peek() && this.peek().type==='^'){ this.eat('^');
-            n={op:'^',left:n,right:this.power()}; }
-        return n; }
-
-    factor(){
-        const k=this.peek();
-        if(k.type==='num'){ this.eat('num'); return {num:k.val}; }
-        if(k.type==='id'){                          // id → func or var/const
-            const id=this.eat('id').val;
-            if(this.peek() && this.peek().type==='('){   // function call
-                this.eat('(');
-                const args=[this.expr()];
-                while(this.peek() && this.peek().type===','){ this.eat(','); args.push(this.expr()); }
-                this.eat(')');
-                return {func:id,args};
-            }
-            return {id};
+    // 1) addition / subtraction
+    expr() {
+        let node = this.term();
+        while (this.peek() && (this.peek().type === '+' || this.peek().type === '-')) {
+            const op = this.eat(this.peek().type).type;
+            node = { op, left: node, right: this.term() };
         }
-        if(k.type==='('){ this.eat('('); const n=this.expr(); this.eat(')'); return n; }
-        if(k.type==='-'){ this.eat('-'); return {op:'neg',arg:this.factor()}; }
+        return node;
+    }
+
+    // 2) multiplication (and implicit multiplication)
+    term() {
+        let node = this.unary();
+        while (true) {
+            const k = this.peek();
+            if (
+                k &&
+                (k.type === '*' ||
+                    k.type === '/' ||
+                    k.type === '(' ||      // implicit: number or id followed by '('
+                    k.type === 'num' ||
+                    k.type === 'id')
+            ) {
+                const op = (k.type === '*' || k.type === '/') ? this.eat(k.type).type : '*';
+                node = { op, left: node, right: this.unary() };
+            } else {
+                break;
+            }
+        }
+        return node;
+    }
+
+    // 3) unary minus binds looser than ^, so we call power() here
+    unary() {
+        if (this.peek() && this.peek().type === '-') {
+            this.eat('-');
+            return { op: 'neg', arg: this.unary() };
+        }
+        return this.power();
+    }
+
+    // 4) exponentiation is right-associative and binds tighter than unary
+    power() {
+        let node = this.primary();
+        if (this.peek() && this.peek().type === '^') {
+            this.eat('^');
+            node = { op: '^', left: node, right: this.power() };
+        }
+        return node;
+    }
+
+    // 5) now the old “factor” without unary-minus
+    primary() {
+        const k = this.peek();
+        if (!k) throw SyntaxError('Unexpected end of input');
+
+        if (k.type === 'num') {
+            this.eat('num');
+            return { num: k.val };
+        }
+
+        if (k.type === 'id') {
+            const id = this.eat('id').val;
+            if (this.peek() && this.peek().type === '(') {
+                // function call
+                this.eat('(');
+                const args = [ this.expr() ];
+                while (this.peek() && this.peek().type === ',') {
+                    this.eat(',');
+                    args.push(this.expr());
+                }
+                this.eat(')');
+                return { func: id, args };
+            }
+            return { id };
+        }
+
+        if (k.type === '(') {
+            this.eat('(');
+            const node = this.expr();
+            this.eat(')');
+            return node;
+        }
+
         throw SyntaxError(`Unexpected token ${k.type}`);
     }
 }
+
 
 /*--------------------------------------------------------------*
  * 3.  GLSL printer                                             *
@@ -143,7 +198,7 @@ function printGLSL(node){
 /*--------------------------------------------------------------*
  * 4.  Public helper                                            *
  *--------------------------------------------------------------*/
-export function shaderMath(source){
+export function toGLSL(source){
     const ast = new Parser(tokenize(source)).parse();
     return printGLSL(ast);
 }
