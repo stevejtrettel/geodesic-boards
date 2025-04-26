@@ -1,9 +1,9 @@
 import { Vector2 }            from 'three';
-import Symplectic2            from '../../components/integrators/Symplectic2.js';
-import TransportIntegrator    from '../../components/integrators/TransportIntegrator.js';
+import Symplectic2            from '../integrators/Symplectic2.js';
+import TransportIntegrator    from '../integrators/TransportIntegrator.js';
 import { createInterpolator2 } from './interpolators.js';
 import Curve                  from './Curve.js';
-import TangentVector          from '../../components/integrators/TangentVector.js';
+import TangentVector          from '../integrators/TangentVector.js';
 import DiffGeo            from './DiffGeo.js';
 
 export default class Surface {

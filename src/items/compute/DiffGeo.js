@@ -1,7 +1,7 @@
 import { Vector2, Vector3 }         from 'three';
 import { create, all }              from 'mathjs/number';
-import {toGLSL}                     from "../../components/utils/toGLSL.js";
-import {fromMathJS}                 from "../../components/utils/fromMathJS.js";
+import { compileMath }              from '../utils/compileMath.js';
+import {toGLSL}                     from "../utils/toGLSL.js";
 
 const math = create(all);           // light-weight math.js bundle
 
@@ -43,14 +43,13 @@ export default class DiffGeo {
      * ---------------------------------------------------------------- */
 
     _buildDerivatives() {
-
         // ──────────────────────────────────────────────────────
         // 1) parse & simplify once
         // ──────────────────────────────────────────────────────
-        const nodeF      = math.parse(this.eqn);
+        const nodeF      = math.simplify(math.parse(this.eqn));
         const paramNames = Object.keys(this.parameters);
         const make       = src =>
-            fromMathJS(src, {
+            compileMath(src, {
                 vars:      ['x','y'],
                 params:    paramNames,
                 paramsObj: this.parameters
@@ -58,10 +57,8 @@ export default class DiffGeo {
 
         // helper to try compile, else return null
         const tryCompile = node => {
-            let res= make(node);
-            return res;
-            // try { return make(node); }
-            // catch { return null; }
+            try { return make(node.toString()); }
+            catch { return null; }
         };
 
         // helper to get a simplified node derivative
@@ -79,7 +76,7 @@ export default class DiffGeo {
         // ──────────────────────────────────────────────────────
         // 3) compile to JS functions (with numeric fallback)
         // ──────────────────────────────────────────────────────
-        this.f   = tryCompile(nodeF) || ((x,y) => 1);
+        this.f   = tryCompile(nodeF)       || ((x,y) => NaN);
         this.fx  = tryCompile(fxNode);
         this.fy  = tryCompile(fyNode);
         this.fxx = tryCompile(fxxNode);

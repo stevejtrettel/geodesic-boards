@@ -1,6 +1,7 @@
 import {Vector3} from "three";
 import BaseCurve from "./BaseCurve.js";
-import TangentVector from "../../components/integrators/TangentVector.js";
+import TangentVector from "../integrators/TangentVector.js";
+
 //extends the abstract curve class in ThreeJS
 //lets us specify a curve by giving a parameterization and a start point, end point
 // (in terms of the parameterization variable)

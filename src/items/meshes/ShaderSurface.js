@@ -62,6 +62,7 @@ export default class ShaderSurface extends THREE.Mesh {
     rebuild() {
         // 1. toss uniforms & shaders living on the GPU
         this.material.dispose();
+
         // 2. replace with fresh GLSL generated from the *current* diffGeo
         this.material = this._buildMaterial();
     }
