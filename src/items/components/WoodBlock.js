@@ -16,7 +16,6 @@ export default class WoodBlock extends Group{
 
         this.surface = surface;
 
-
         const pbrMat = new MeshPhysicalMaterial({ metalness: 0, roughness: 0.3,side:DoubleSide });
 
         const csm = new CustomShaderMaterial({
@@ -31,12 +30,12 @@ export default class WoodBlock extends Group{
 
 
 
-        this.graph = new ParametricSurface(surface.parametricEqn, surface.domain,csm)
+        this.graph = new ParametricSurface(surface.math.parametric, surface.domain,csm)
         this.add(this.graph)
     }
 
     update(){
-        this.graph.redraw(this.surface.parametricEqn);
+        this.graph.redraw(this.surface.math.parametric);
     }
 }
 

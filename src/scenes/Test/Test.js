@@ -13,22 +13,14 @@ import TangentVector from "../../items/integrators/TangentVector.js";
 import WoodBlock from "../../items/components/WoodBlock.js";
 import GeodesicSpray from "../../items/components/GeodesicSpray.js";
 import GeodesicStripes from "../../items/components/GeodesicStripes.js";
-import {mathToGLSL} from "../../items/utils/mathToGLSL.js";
+import {compileMath} from "../../items/utils/compileMath.js";
 
-const testParams = {
-    first: 0,
-}
-
-/* --- demo ------------------------------------------------------ */
-console.log( mathToGLSL('atan2(y,x) + 3^n - ln(2)') );
-// → "atan(y, x) + pow(3.0, n) - log(2.0)"
 
 
 class Test extends Vignette {
 
     constructor() {
         super();
-
 
 
         this.params = {
@@ -38,20 +30,11 @@ class Test extends Vignette {
         };
 
         //build the surface we will work with
-        let f = (x,y) => this.params.a*Math.exp(-x*x-y*y);
-            ///this.params.a*Math.sin(2*x)*Math.sin(2*y);
-            //
+        let eqn = `a*exp(-x^2-y^2)`;
         let dom = [[-2,2],[-3,3]];
 
-        let derivatives = {
-            fu: (u,v)=> 2*this.params.a*Math.cos(2*u)*Math.sin(2*v),
-            fv: (u,v)=> 2*this.params.a*Math.sin(2*u)*Math.cos(2*v),
-            fuu: (u,v)=> -4*this.params.a*Math.sin(2*u)*Math.sin(2*v),
-            fvv: (u,v)=> -4*this.params.a*Math.sin(2*u)*Math.sin(2*v),
-            fuv: (u,v)=>  4*this.params.a*Math.cos(2*u)*Math.cos(2*v),
-        }
 
-        let surf = new Surface(f,dom);
+        let surf = new Surface(eqn,dom,this.params);
         this.surf = surf;
 
         //make the block
