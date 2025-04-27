@@ -1,7 +1,8 @@
 import {Vector2,Vector3} from "three";
 
-import {NIntegrateRK} from "../components/integrators/NIntegrateRK.js";
-import Symplectic2 from "../components/integrators/Symplectic2.js";
+import {NIntegrateRK} from "../integrators/NIntegrateRK.js";
+import Symplectic2 from "../integrators/Symplectic2.js";
+
 
 export default class BHGeometry{
     constructor(R) {

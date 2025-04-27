@@ -1,4 +1,3 @@
-import {createCentripetalCatmullRomVec} from "./catmullRomVector.js";
 
 /**
  * Build a Catmull–Rom interpolator for (xs[i], ys[i]) pairs.

@@ -1,7 +1,8 @@
 import { Vector2, Vector3 }         from 'three';
 import { create, all }              from 'mathjs/number';
-import {toGLSL}                     from "../../components/utils/toGLSL.js";
-import {fromMathJS}                 from "../../components/utils/fromMathJS.js";
+
+import {toGLSL} from "../utils/toGLSL.js";
+import {fromMathJS} from "../utils/fromMathJS.js";
 
 const math = create(all);           // light-weight math.js bundle
 

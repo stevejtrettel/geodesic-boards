@@ -1,4 +1,6 @@
-import * as math from 'mathjs';
+import { create, all }              from 'mathjs/number';
+const math = create(all);           // light-weight math.js bundle
+
 
 /* ------------------------------------------------------------------
    compileNative ─ parse once, emit plain JS that reads params.<id>

@@ -97,12 +97,12 @@ export function fromMathJS(
     // first arg is the paramsObj closure, then your vars in order
     const fnArgs = ['paramsObj', ...vars];
     const fnBody = `return ${expr};`;
-    console.log(fnArgs);
-    console.log(fnBody);
+    // console.log(fnArgs);
+    // console.log(fnBody);
 
     // build a raw function(paramsObj, ...vars){ return <expr>; }
     const raw = new Function(...fnArgs, fnBody);
-    console.log(raw);
+  //  console.log(raw);
 
     // bind your paramsObj so the returned function signature is just (...vars)
     return raw.bind(null, paramsObj);

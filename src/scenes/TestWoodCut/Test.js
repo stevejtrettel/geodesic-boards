@@ -5,11 +5,11 @@ import {
 } from "three";
 
 import Vignette from "../../code/Vignette.js";
-import Surface from "../../code/graph/compute/Surface.js";
-import TangentVector from "../../code/components/integrators/TangentVector.js";
-import WoodBlock from "../../code/graph/display/WoodBlock.js";
-import GeodesicSpray from "../../code/graph/display/GeodesicSpray.js";
-import GeodesicStripes from "../../code/graph/display/GeodesicStripes.js";
+import Surface from "../../code/diffgeo/Surface.js";
+import TangentVector from "../../code/diffgeo/TangentVector.js";
+import WoodBlock from "../../code/geodesics/WoodBlock.js";
+import GeodesicSpray from "../../code/geodesics/GeodesicSpray.js";
+import GeodesicStripes from "../../code/geodesics/GeodesicStripes.js";
 
 
 

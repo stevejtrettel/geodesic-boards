@@ -1,6 +1,4 @@
 
-
-
 //returns an interpolating function
 //integrating fn on domain
 

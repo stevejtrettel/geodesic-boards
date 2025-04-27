@@ -7,13 +7,13 @@ import {
 } from "three";
 
 import Vignette from "../../code/Vignette.js";
-import {NIntegrateRK} from "../../code/components/integrators/NIntegrateRK.js";
-import RevolutionSurfaceGeometry from "../../code/components/geometries/RevolutionSurfaceGeometry.js";
-import BHGeometry from "../../code/blackhole/BHGeometry.js";
-import TangentVector from "../../code/components/integrators/TangentVector.js";
-import Geodesic  from "../../code/graph/display/Geodesic.js";
-import ParametricSurface from "../../code/components/meshes/ParametricSurface.js";
-import GeodesicSpray from "../../code/graph/display/GeodesicSpray.js";
+import BHGeometry from "../../code/diffgeo/BHGeometry.js";
+import TangentVector from "../../code/diffgeo/TangentVector.js";
+import Geodesic from "../../code/geodesics/Geodesic.js";
+import ParametricSurface from "../../code/meshes/ParametricSurface.js";
+import GeodesicSpray from "../../code/geodesics/GeodesicSpray.js";
+
+
 
 class Test extends Vignette {
 

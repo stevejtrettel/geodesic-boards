@@ -1,9 +1,5 @@
 import {DoubleSide, Group, MeshPhysicalMaterial} from "three";
-import ParametricSurface from "../../components/meshes/ParametricSurface.js";
-// import CustomShaderMaterial from "three-custom-shader-material/vanilla";
-// import ShaderSurface from "../meshes/ShaderSurface.js";
-// import {toGLSL} from "../utils/toGLSL";
-
+import ParametricSurface from "../meshes/ParametricSurface.js";
 
 let defaultMaterial = new MeshPhysicalMaterial({
     color:0xffffff,

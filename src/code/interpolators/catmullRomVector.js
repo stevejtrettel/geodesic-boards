@@ -1,4 +1,3 @@
-import { Vector2, Vector3 } from "three";
 
 /**
  * Uniform‐spacing Catmull–Rom for Vector2/Vector3 outputs.
