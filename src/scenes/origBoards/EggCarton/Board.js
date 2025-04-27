@@ -10,8 +10,8 @@ import GPUGraphSurface from "../../../code/meshes/GPUGraphSurface.js";
 
 const stripeParams = {
     animate:false,
-    pos: 0.5,
-    angle: -0.2,
+    pos: 0.544,
+    angle: 0.6,
     spread:0.69,
     radius:0.02,
 };
@@ -96,7 +96,8 @@ export default class Board extends Vignette {
             this.stripes.update({spread: 0.2 * (2 + Math.sin(time)), pos: 0.5 + 0.2 * Math.sin(time)});
         }
         else if(this.needsUpdate){
-            this.stripes.redraw();
+            this.stripes.recomputeTransport();
+            this.stripes.update();
             this.needsUpdate=false;
         }
     }

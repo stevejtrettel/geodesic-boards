@@ -105,6 +105,9 @@ export default class Board extends Vignette {
             this.stripes.update({spread: 0.2 * (2 + Math.sin(time)), pos: 0.5 + 0.2 * Math.sin(time)});
         }
         else if(this.needsUpdate){
+            // // really should recompute transport
+            // this.stripes.recomputeTransport();
+            // this.stripes.update();
             this.stripes.redraw();
             this.needsUpdate=false;
         }

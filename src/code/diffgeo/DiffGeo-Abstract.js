@@ -18,8 +18,8 @@ export default class DiffGeo{
         console.log('Need to Implement IntegrateGeodesic')
     }
 
-    parallelTransport(coordCurve){
-        //return an interpolating function for basis along curve
+    getParallelTransport(coordCurve){
+        //return a parallel transport integrator along the curve
         //curve domain = [0,1]
         console.log('Need to Implement ParallelTransport')
     }

@@ -204,13 +204,10 @@ export default class GraphGeometry extends DiffGeo{
         return pts;
     }
 
-    parallelTransport = (coordCurve) => {
+    getParallelTransport = (coordCurve) => {
         //return an interpolating function for basis along curve
         //coordCurve goes from 0 to 1
-        //builds a new integrator for any given curve
-        const integrator  = new TransportIntegrator(coordCurve, this.dTransport,0.0005);
-        //it seems really small steps are needed! But we run this ONCE to get the interpolator
-        return integrator.getTransportedBasis();
+        return new TransportIntegrator(coordCurve, this.dTransport,0.0005);
     }
 
     rebuild(eqn){
