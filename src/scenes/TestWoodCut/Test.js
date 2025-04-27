@@ -7,9 +7,9 @@ import {
 import Vignette from "../../code/Vignette.js";
 import Surface from "../../code/diffgeo/Surface.js";
 import TangentVector from "../../code/diffgeo/TangentVector.js";
-import WoodBlock from "../../code/geodesics/WoodBlock.js";
 import GeodesicSpray from "../../code/geodesics/GeodesicSpray.js";
 import GeodesicStripes from "../../code/geodesics/GeodesicStripes.js";
+import ParametricSurface from "../../code/meshes/ParametricSurface.js";
 
 
 
@@ -31,9 +31,10 @@ class Test extends Vignette {
         let surf = new Surface(this.eqn, dom, this.params);
         this.surf = surf;
 
-        //make the block
-        let woodMat = new MeshPhysicalMaterial({color:0x2733e3, clearcoat:1,side:DoubleSide});
-        this.block = new WoodBlock(surf,woodMat);
+
+        const blockMat = new MeshPhysicalMaterial({ color: 0xff2a00, metalness: 0, roughness: 0.3,side:DoubleSide });
+        this.block = new ParametricSurface(this.surf.math.parametric, this.surf.domain,blockMat);
+
 
         //make the geodesic
         let tv = new TangentVector(new Vector2(1,-1),new Vector2(-0.2,1));
