@@ -53,10 +53,15 @@ class Test extends Vignette {
             animateSpray:true,
             animateStripes:true,
             animateSurface:true,
+
             posxSpray:0,
             posySpray:0,
             angSpray:0,
             spreadSpray:1,
+
+            posStripes:0.5,
+            angStripes:0,
+            spreadStripes:0.2,
 
             needsUpdate:false,
         }
@@ -100,6 +105,21 @@ class Test extends Vignette {
         });
         spray.add(this.animateParams,'spreadSpray',0.05,2,0.01).onChange(value=>{
             this.spray.update({spread:value});
+        });
+
+
+
+        let stripes = ui.addFolder('Stripes');
+        stripes.close();
+        stripes.add(this.animateParams,'animateStripes');
+        stripes.add(this.animateParams,'posStripes',0,1,0.01).onChange(value=>{
+            this.stripes.update({pos:value});
+        });
+        stripes.add(this.animateParams,'angStripes',-2,2,0.01).onChange(value=>{
+            this.stripes.update({angle:value});
+        });
+        stripes.add(this.animateParams,'spreadStripes',0.05,2,0.01).onChange(value=>{
+            this.stripes.update({spread:value});
         });
 
     }
