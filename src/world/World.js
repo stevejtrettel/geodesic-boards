@@ -49,7 +49,8 @@ class World{
 
         //camera initialization
         this.camera = new PerspectiveCamera();
-        this.camera.position.z = 5;
+        this.camera.lookAt(0,0,0);
+        this.camera.position.z = 10;
 
         //the renderer
         this.renderer = new WebGLRenderer({
@@ -97,6 +98,10 @@ class World{
     }
 
     setView(view){
+
+        //LATER UPDATE THIS TO AN HONEST CLASS:
+        //RIGHT NOW VIEW IS A VECTOR
+        this.camera.position.set(view.x,view.y,view.z);
 
         // //set some camera stuff
         // if (this.camera.tick) {

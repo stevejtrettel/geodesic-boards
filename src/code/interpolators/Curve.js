@@ -27,11 +27,11 @@ export default class Curve extends BaseCurve{
     }
 
     getTV(u){
-        let h = 0.001;
+        let h = 0.0001;
         let t = this.start + this.range *u;
         let p = this.fn(t);
         let v = this.fn(t+h).sub(this.fn(t-h));
-        v.normalize();
+        v.divideScalar(2*h);
         return new TangentVector(p,v);
     }
 

@@ -11,13 +11,15 @@
  *  ‣ When DiffGeo.rebuild(eqn) is called the caller should follow
  *    with surface.rebuild() so the new GLSL is compiled.
  *******************************************************************/
-import * as THREE from 'three';
+
+import{ Vector2,Mesh,MeshPhysicalMaterial,PlaneGeometry, DoubleSide} from "three";
+
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
 
 import woodShader   from '../shaders/woodShader.glsl';   // fragment shader
 // If you want to swap colour maps, just pass a different frag shader.
 
-export default class ShaderSurface extends THREE.Mesh {
+export default class GPUGraphSurface extends Mesh {
 
     /** ----------------------------------------------------------------
      * @param {DiffGeo} diffGeo            – already-initialised instance
@@ -27,22 +29,20 @@ export default class ShaderSurface extends THREE.Mesh {
      *        • fragmentShader – override for colour logic
      *        • baseMaterial   – e.g. THREE.MeshPhysicalMaterial
      * ----------------------------------------------------------------*/
-    constructor(
-        diffGeo,
-        domain  = [[0,1],[0,1]],
-        options = {}
-    ){
+    constructor(graphGeo, options = {}){
+
         const {
             widthSegments  = 128,
             heightSegments = 128,
             fragmentShader = woodShader,
-            baseMaterial   = THREE.MeshPhysicalMaterial,
+            baseMaterial   = MeshPhysicalMaterial,
         } = options;
 
         // --- store -----------------------------------------------------------------
         super();                                 // dummy super; we’ll attach geo+mat below
-        this.diffGeo = diffGeo;
-        this.domain  = domain;
+
+        this.geo = graphGeo;
+
         this._segs   = { widthSegments, heightSegments };
         this._base   = baseMaterial;
         this._frag   = fragmentShader;
@@ -66,21 +66,14 @@ export default class ShaderSurface extends THREE.Mesh {
         this.material = this._buildMaterial();
     }
 
-    /** Convenience: change just the domain (keeps seg counts) */
-    setDomain(domain){
-        this.domain = domain;
-        this.geometry.dispose();
-        this.geometry = this._buildGeometry();
-    }
-
     /* ==================================================================== *
      *  INTERNAL HELPERS
      * ==================================================================== */
 
     /* ---- geometry is a simple plane ------------------------------------ */
     _buildGeometry(){
-        const [[x0,x1],[y0,y1]] = this.domain;
-        return new THREE.PlaneGeometry(
+        const [[x0,x1],[y0,y1]] = this.geo.domain;
+        return new PlaneGeometry(
             x1 - x0,                       // width
             y1 - y0,                       // height
             this._segs.widthSegments,
@@ -91,14 +84,13 @@ export default class ShaderSurface extends THREE.Mesh {
     /* ---- uniforms & GLSL snippets -------------------------------------- */
     _buildMaterial(){
 
-        const [[x0,x1],[y0,y1]] = this.domain;
-        const diff = this.diffGeo;
-        const { parameters }   = diff;       // live reference – uniforms auto-sync
+        const [[x0,x1],[y0,y1]] = this.geo.domain;
+        const parameters   = this.geo.parameters;       // live reference – uniforms auto-sync
 
         /* 1.  uniforms + declarations */
         const uniforms      = {
-            uDomainMin : { value: new THREE.Vector2(x0, y0) },
-            uDomainSize: { value: new THREE.Vector2(x1 - x0, y1 - y0) },
+            uDomainMin : { value: new Vector2(x0, y0) },
+            uDomainSize: { value: new Vector2(x1 - x0, y1 - y0) },
         };
         const decls = [
             'uniform vec2 uDomainMin;',
@@ -117,12 +109,12 @@ export default class ShaderSurface extends THREE.Mesh {
 ${decls.join('\n')}
 
 /* --- analytic data supplied by DiffGeo ------------------------------ */
-float f   (float x,float y){ return ${diff.glsl_f}; }
-float fx  (float x,float y){ return ${diff.glsl_fx};}
-float fy  (float x,float y){ return ${diff.glsl_fy};}
-float fxx (float x,float y){ return ${diff.glsl_fxx};}
-float fxy (float x,float y){ return ${diff.glsl_fxy};}
-float fyy (float x,float y){ return ${diff.glsl_fyy};}
+float f   (float x,float y){ return ${this.geo.glsl_f}; }
+float fx  (float x,float y){ return ${this.geo.glsl_fx};}
+float fy  (float x,float y){ return ${this.geo.glsl_fy};}
+float fxx (float x,float y){ return ${this.geo.glsl_fxx};}
+float fxy (float x,float y){ return ${this.geo.glsl_fxy};}
+float fyy (float x,float y){ return ${this.geo.glsl_fyy};}
 
 varying float vCurvature;
 varying float vZ;
@@ -160,7 +152,7 @@ void main(){
             vertexShader  : vs,
             fragmentShader: this._frag,
             uniforms,
-            side          : THREE.DoubleSide,
+            side          : DoubleSide,
             transparent   : false,
             roughness     : 0.25,
             metalness     : 0.0,

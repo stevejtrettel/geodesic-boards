@@ -18,11 +18,8 @@ export default class GeodesicStripes extends GeodesicArray{
     }
 
     _initialize(){
-
         const [[x0, x1], [y0, y1]] = this.surface.domain;
-
         this.curve =new Curve(t => new Vector2(x0 + t * (x1 - x0), y0));
-
         this.parallel = this.surface.parallelTransport(this.curve);
     }
 
@@ -30,10 +27,11 @@ export default class GeodesicStripes extends GeodesicArray{
     setIni(){
 
         let V = new Vector2(Math.sin(this.properties.angle),Math.cos(this.properties.angle));
+
         for(let i=0; i<this.N; i++){
 
-            let offset = i/this.N-0.5;
-            let t = this.properties.pos+this.properties.spread*offset;
+            let offset = (i+0.5)/this.N-0.5;
+            let t = this.properties.pos + this.properties.spread*offset;
 
             let basis = this.parallel(t);
 

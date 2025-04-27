@@ -1,13 +1,8 @@
-
 /**
  * Turn a Math.js AST node directly into a JS function.
  *
- * @param {math.Node} node         — a Math.js AST, e.g. from math.parse() or math.simplify()
- * @param {Object}    [options]
- * @param {string[]}  [options.vars]      — names of independent variables, e.g. ['x','y']
- * @param {string[]}  [options.params]    — names of parameters, e.g. ['a','b','c']
- * @param {Object}    [options.paramsObj] — an object supplying numeric values for each param
- * @returns {Function} f(...vars) → Number
+ * Added: support for constants π, e, τ, √2, √3, √½, ln 2, ln 10, log₂ e, log₁₀ e, φ
+ *        (case-insensitive; feel free to extend `constantMap`).
  */
 export function fromMathJS(
     node,
@@ -17,60 +12,57 @@ export function fromMathJS(
     const vSet = new Set(vars);
     const pSet = new Set(params);
 
+    /* ──────────────────────────────────────────────────────────────
+     * Constants recognised in SymbolNodes
+     * ────────────────────────────────────────────────────────────── */
+    const constantMap = {
+        pi      : 'Math.PI',
+        tau     : '2*Math.PI',
+        e       : 'Math.E',
+        sqrt2   : 'Math.sqrt(2)',
+        sqrt3   : 'Math.sqrt(3)',
+        phi     : '(1+Math.sqrt(5))/2',
+    };
+
     function gen(n) {
-        // numeric literals
+
+        /* numeric literal ------------------------------------------------ */
         if (n.isConstantNode) {
             return String(n.value);
         }
 
-        // parentheses
+        /* parentheses ---------------------------------------------------- */
         if (n.isParenthesisNode) {
             return `(${gen(n.content)})`;
         }
 
-        // variables or parameters
+        /* variables, parameters, or named constants --------------------- */
         if (n.isSymbolNode) {
             const name = n.name;
-            if (vSet.has(name))       return name;
-            if (pSet.has(name))       return `paramsObj.${name}`;
-            throw new Error(`Unrecognized symbol "${name}" in expression`);
+            if (vSet.has(name)) return name;                 // independent var
+            if (pSet.has(name)) return `paramsObj.${name}`;  // parameter
+            const key = name.toLowerCase();                  // constant?
+            if (key in constantMap) return constantMap[key];
+            throw new Error(`Unrecognised symbol “${name}” in expression`);
         }
 
-        // operators: +, -, *, /, ^, etc.
+        /* operators: + − * / ^ ------------------------------------------ */
         if (n.isOperatorNode) {
             const [L, R] = n.args;
-            // unary minus
-            if (n.fn === 'unaryMinus') {
-                return `(-${gen(L)})`;
-            }
-            // power: '^' → '**'
+            if (n.fn === 'unaryMinus') return `(-${gen(L)})`;
             const op = n.op === '^' ? '**' : n.op;
             return `(${gen(L)} ${op} ${gen(R)})`;
         }
 
-        // function calls: sin, cos, exp, log, etc.
+        /* function calls: sin, cos, … ----------------------------------- */
         if (n.isFunctionNode) {
-            // map Math.js names → Math.*
-            // you can extend this mapping if you use more functions
             const nameMap = {
-                sin:   'Math.sin',
-                cos:   'Math.cos',
-                tan:   'Math.tan',
-                asin:  'Math.asin',
-                acos:  'Math.acos',
-                atan:  'Math.atan',
-                atan2: 'Math.atan2',
-                exp:   'Math.exp',
-                log:   'Math.log',    // natural log
-                log10: 'Math.log10',
-                sqrt:  'Math.sqrt',
-                abs:   'Math.abs',
-                ceil:  'Math.ceil',
-                floor: 'Math.floor',
-                round: 'Math.round',
-                max:   'Math.max',
-                min:   'Math.min',
-                // add more if needed...
+                sin:   'Math.sin',   cos:   'Math.cos', tan:   'Math.tan',
+                asin:  'Math.asin',  acos:  'Math.acos', atan:  'Math.atan',
+                atan2: 'Math.atan2', exp:   'Math.exp',  log:   'Math.log',
+                log10:'Math.log10',  sqrt:  'Math.sqrt', abs:   'Math.abs',
+                ceil:  'Math.ceil',  floor: 'Math.floor',round: 'Math.round',
+                max:   'Math.max',   min:   'Math.min',
             };
             const fn   = n.name;
             const jsFn = nameMap[fn] || `Math.${fn}`;
@@ -78,52 +70,23 @@ export function fromMathJS(
             return `${jsFn}(${args})`;
         }
 
-        // array or object access like A[i]
+        /* array / object accessor --------------------------------------- */
         if (n.isAccessorNode) {
             return `${gen(n.object)}[${gen(n.index)}]`;
         }
 
-        // fallback: try the built-in toString()
-        if (typeof n.toString === 'function') {
-            return n.toString();
-        }
+        /* fall back to node.toString() ---------------------------------- */
+        if (typeof n.toString === 'function') return n.toString();
 
         throw new Error(`Unsupported node type: ${n.type}`);
     }
 
-    // generate the JS expression
-    const expr = gen(node);
-
-    // first arg is the paramsObj closure, then your vars in order
+    /* emit function ----------------------------------------------------- */
+    const expr   = gen(node);
     const fnArgs = ['paramsObj', ...vars];
     const fnBody = `return ${expr};`;
-    // console.log(fnArgs);
-    // console.log(fnBody);
+    const raw    = new Function(...fnArgs, fnBody);
 
-    // build a raw function(paramsObj, ...vars){ return <expr>; }
-    const raw = new Function(...fnArgs, fnBody);
-  //  console.log(raw);
-
-    // bind your paramsObj so the returned function signature is just (...vars)
+    /* bind paramsObj so caller supplies just the variables */
     return raw.bind(null, paramsObj);
-
-
-    // let rawFn;
-    // try {
-    //     // build the raw Function constructor
-    //     rawFn = new Function(...fnArgs, fnBody);
-    // } catch (err) {
-    //     console.error('🛑 fromMathJS failed to compile:');
-    //     console.error('  args:', fnArgs);
-    //     console.error('  body:', fnBody);
-    //     console.error(err);
-    //     throw err;   // or provide a fallback evaluator here
-    // }
-    //
-    // // wrap so the user only calls f(x,y,...), and we always pass paramsObj under the hood
-    // return function(...varValues) {
-    //     return rawFn(paramsObj, ...varValues);
-    // };
 }
-
-

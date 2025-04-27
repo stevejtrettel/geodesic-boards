@@ -4,15 +4,15 @@ import {
     DoubleSide,
 } from "three";
 
-import Vignette from "../../code/Vignette.js";
-import TangentVector from "../../code/diffgeo/TangentVector.js";
-import GeodesicSpray from "../../code/geodesics/GeodesicSpray.js";
-import GeodesicStripes from "../../code/geodesics/GeodesicStripes.js";
-import ParametricSurface from "../../code/meshes/ParametricSurface.js";
-import GraphGeometry from "../../code/diffgeo/GraphGeometry.js";
+import Vignette from "/src/code/Vignette.js";
+import TangentVector from "/src/code/diffgeo/TangentVector.js";
+import GeodesicSpray from "/src/code/geodesics/GeodesicSpray.js";
+import GeodesicStripes from "/src/code/geodesics/GeodesicStripes.js";
+import ParametricSurface from "/src/code/meshes/ParametricSurface.js";
+import GraphGeometry from "/src/code/diffgeo/GraphGeometry.js";
 
 
-class Test extends Vignette {
+export default class TestGraph extends Vignette {
 
     constructor() {
         super();
@@ -148,8 +148,6 @@ class Test extends Vignette {
 
 }
 
-
-export default Test;
 
 
 

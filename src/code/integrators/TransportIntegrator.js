@@ -1,8 +1,10 @@
+import {Vector2} from "three";
+import {createCatmullRomVec} from "../interpolators/catmullRomVector.js";
 
 
 export default class TransportIntegrator{
-    constructor(curve, dTransport, eps=0.001) {
-        this.h = eps;
+    constructor(curve, dTransport, h=0.001) {
+        this.h = h;
         this.curve = curve;
         this.dTransport = dTransport;
     }
@@ -46,5 +48,31 @@ export default class TransportIntegrator{
         //move ahead one step
         return vec.clone().add(update);
     }
+
+    getTransportedBasis(){
+        //set the number of steps needed for the integration
+        let steps = 1/this.h;
+
+        //choose basis and initialize arrays
+        const Ts = [], Xs = [], Ys = [];
+        let X = new Vector2(1, 0), Y = new Vector2(0, 1);
+        Ts.push(0); Xs.push(X.clone()); Ys.push(Y.clone());
+
+        //perform the integration for each basis vector
+        let t=0;
+        for (let i = 0; i <= steps; ++i) {
+            t += this.h;
+            X = this.step(t , X);
+            Y = this.step(t , Y);
+            Ts.push(t);
+            Xs.push(X.clone());
+            Ys.push(Y.clone());
+        }
+
+        const XTransport = createCatmullRomVec(Ts,Xs);
+        const YTransport = createCatmullRomVec(Ts,Ys);
+        return (t)=>[XTransport(t),YTransport(t)];
+    }
+
 }
 

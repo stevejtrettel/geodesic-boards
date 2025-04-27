@@ -6,16 +6,15 @@ import {
     Vector3, CatmullRomCurve3, TubeGeometry, Mesh, Group,
 } from "three";
 
-import Vignette from "../../code/Vignette.js";
-import BhOld from "../../code/diffgeo/BHGeometry.js";
-import TangentVector from "../../code/diffgeo/TangentVector.js";
-import Geodesic from "../../code/geodesics/Geodesic.js";
-import ParametricSurface from "../../code/meshes/ParametricSurface.js";
-import GeodesicSpray from "../../code/geodesics/GeodesicSpray.js";
+import Vignette from "/src/code/Vignette.js";
+import BHGeometry from "/src/code/diffgeo/BHGeometry.js";
+import TangentVector from "/src/code/diffgeo/TangentVector.js";
+import Geodesic from "/src/code/geodesics/Geodesic.js";
+import ParametricSurface from "/src/code/meshes/ParametricSurface.js";
+import GeodesicSpray from "/src/code/geodesics/GeodesicSpray.js";
 
 
-
-class Test extends Vignette {
+export default class TestBH extends Vignette {
 
     constructor() {
         super();
@@ -25,7 +24,7 @@ class Test extends Vignette {
 
         this.bhGroup = new Group();
 
-        this.bh = new BhOld(R);
+        this.bh = new BHGeometry(R);
 
         //make the geodesic
         let geoMat = new MeshPhysicalMaterial({color:0xffcb30,clearcoat:1,});
@@ -99,5 +98,3 @@ class Test extends Vignette {
 
 }
 
-
-export default Test;

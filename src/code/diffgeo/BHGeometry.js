@@ -11,7 +11,7 @@ export default class BHGeometry extends DiffGeo{
         this.R = R;
 
         //domain 3/2R is the Event Horizon, 9/8 is embedding limit
-        this.domain = [9/8*this.R,30*this.R];
+        this.domain = [3/2*this.R,30*this.R];
 
         const [r0,r1] = this.domain;
         this._outside = (pos) => (pos.x < r0 || pos.x > r1);
@@ -94,7 +94,7 @@ export default class BHGeometry extends DiffGeo{
         return pts;
     }
 
-    parallelTransport(coordCurve,domain=[0,1]){
+    parallelTransport(coordCurve){
         //return an interpolating function for basis along curve
         console.log('Need to Implement ParallelTransport')
     }

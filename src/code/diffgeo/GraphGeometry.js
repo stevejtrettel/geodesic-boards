@@ -9,6 +9,7 @@ import Symplectic2 from "../integrators/Symplectic2.js";
 import TransportIntegrator from "../integrators/TransportIntegrator.js";
 import {createCatmullRomVec} from "../interpolators/catmullRomVector.js";
 import DiffGeo from "./DiffGeo-Abstract.js";
+import RungeKutta from "../integrators/RungeKutta.js";
 
 export default class GraphGeometry extends DiffGeo{
     constructor(eqn, domain = [[0, 1],[0, 1]], parameters = {}) {
@@ -46,11 +47,11 @@ export default class GraphGeometry extends DiffGeo{
             return this.scratch.set(fx, fy).multiplyScalar(coef);
         };
 
-        this.geodesicEqn = new Symplectic2(this.acceleration, 0.02);
+        this.geodesicEqn = new RungeKutta(this.acceleration, 0.02);
 
         this.dTransport = (tv, V) => {
-            const { x:x, y:y }   = tv.pos;
-            const { x: xP, y: yP } = tv.vel;
+
+            const {pos: {x:x,y:y},vel:{x:xP,y:yP}} = tv;
 
             const fx  = this.fx(x, y);
             const fy  = this.fy(x, y);
@@ -64,16 +65,16 @@ export default class GraphGeometry extends DiffGeo{
             const Γxxx =  fx * (fxx - fx * fy * fxy + fy * fy * fyy) / denom;
             const Γyyy =  fy * (fyy - fx * fy * fxy + fx * fx * fxx) / denom;
             const Γxyx =  fx * fxy / denom;
-            const Γxxy =  fxx * fy / denom;
+            const Γxxy =  fx * fxx / denom;
             const Γxyy =  fy * fxy / denom;
-            const Γyyx =  fyy * fx / denom;
+            const Γyyx =  fx * fyy / denom;
 
             const VxP = -xP * (Γxxx * V.x + Γxyx * V.y)
                 -yP * (Γxyx * V.x + Γyyx * V.y);
             const VyP = -xP * (Γxxy * V.x + Γxyy * V.y)
                 -yP * (Γxyy * V.x + Γyyy * V.y);
 
-            return this.scratch.set(VxP, VyP);
+            return new Vector2(VxP, VyP);
         };
 
         this.gaussCurvature = (x, y) => {
@@ -177,12 +178,18 @@ export default class GraphGeometry extends DiffGeo{
         return this.scratch.set(-fx,-fy,1).normalize();
     }
 
-    integrateGeodesic(tv, steps = 300) {
+    integrateGeodesic(tv, steps = 1000) {
 
         const pts  = [];
         let state  = tv.clone();
-        // console.log(state);
 
+        //if tv is out of domain: return a list with just the origin and log an error
+        if (this._outside(state.pos)) {
+            console.error('Initial condition for geodesic outside of domain');
+            return [[0,0,100],[0,0,100]];
+        }
+
+        //otherwise, integrate away!
         for (let i = 0; i < steps; ++i) {
 
             const x = state.pos.x;
@@ -197,30 +204,13 @@ export default class GraphGeometry extends DiffGeo{
         return pts;
     }
 
-    parallelTransport(coordCurve){
+    parallelTransport = (coordCurve) => {
         //return an interpolating function for basis along curve
         //coordCurve goes from 0 to 1
-
-        const integrator  = new TransportIntegrator(coordCurve, this.dTransport);
-
-        const steps = 100;
-        const Ts = [], Xs = [], Ys = [];
-
-        let X = new Vector2(1, 0), Y = new Vector2(0, 1);
-        Ts.push(0); Xs.push(X.clone()); Ys.push(Y.clone());
-
-        for (let i = 0; i < steps; ++i) {
-            const t = i / steps;
-            X = integrator.step(t - 1 / steps, X);
-            Y = integrator.step(t - 1 / steps, Y);
-            Ts.push(t);
-            Xs.push(X.clone());
-            Ys.push(Y.clone());
-        }
-
-        const XTransport = createCatmullRomVec(Ts,Xs);
-        const YTransport = createCatmullRomVec(Ts,Ys);
-        return (t)=>[XTransport(t),YTransport(t)];
+        //builds a new integrator for any given curve
+        const integrator  = new TransportIntegrator(coordCurve, this.dTransport,0.0005);
+        //it seems really small steps are needed! But we run this ONCE to get the interpolator
+        return integrator.getTransportedBasis();
     }
 
     rebuild(eqn){
