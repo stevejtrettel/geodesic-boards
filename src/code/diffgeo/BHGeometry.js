@@ -1,34 +1,26 @@
-import {Vector2,Vector3} from "three";
-
+import DiffGeo from "./DiffGeo-Abstract.js";
+import {Vector2, Vector3} from "three";
 import {NIntegrateRK} from "../integrators/NIntegrateRK.js";
 import Symplectic2 from "../integrators/Symplectic2.js";
 
+export default class BHGeometry extends DiffGeo{
 
-export default class BHGeometry{
     constructor(R) {
+        super();
 
         this.R = R;
 
-        //domain 3/2R is the Event Horizon,
-        this.domain = [3/2*this.R,30*this.R];
+        //domain 3/2R is the Event Horizon, 9/8 is embedding limit
+        this.domain = [9/8*this.R,30*this.R];
 
-        //outside only matters with the radial not angle coordinate for the domain
-        const r0 = this.domain[0];
-        const r1 = this.domain[1];
+        const [r0,r1] = this.domain;
         this._outside = (pos) => (pos.x < r0 || pos.x > r1);
 
         //scratch for not generating things a bajillion times
         this.scratch = new Vector2();
 
-        //parameterize a profile of the optical geometry with (r,h) as functions of u:
-        this.radius = (u) => Math.sqrt(u*u*u / (u-this.R));
-
-        //can compute the height function
-        let heightPrime = (u) => Math.sqrt(u*R*(8*u-9*this.R)/(4*(u-this.R)**3));
-        this.height = NIntegrateRK(heightPrime,this.domain);
-
-        //the profile curve
-        this.profile = (u) => new Vector3(this.radius(u),this.height(u),0);
+        //build the embedding coords
+        this._buildEmbeddingCoords();
 
 
         //compute the geodesic acceleration
@@ -47,24 +39,41 @@ export default class BHGeometry{
             return this.scratch.set(uAcc,tAcc);
         }
 
-        this.geoInt = new Symplectic2(this.acceleration,0.05);
+        this.geodesicEqn = new Symplectic2(this.acceleration, 0.02);
+
 
 
     }
 
 
-    //compute the parameterization
+    _buildEmbeddingCoords(){
+
+        const R = this.R;
+
+        //parameterize a profile of the optical geometry with (r,h) as functions of u:
+        this.radius = (u) => Math.sqrt(u*u*u / (u-this.R));
+
+        //can compute the height function
+        let heightPrime = (u) => Math.sqrt(u*R*(8*u-9*this.R)/(4*(u-this.R)**3));
+        this.height = NIntegrateRK(heightPrime,this.domain);
+
+    }
+
+
+    /* ----------------------------------------------------------------
+    * Required Methods
+    * ---------------------------------------------------------------- */
+
     parameterization = (u,theta) => {
         let r = this.radius(u);
         let h = this.height(u);
         return new Vector3(r*Math.cos(theta),r*Math.sin(theta),h);
     }
 
+    surfaceNormal(coords){
+        console.log('Need to Implement GetNormal')
+    }
 
-
-    /* --------------------------------------------------------------------
- * Geodesic integration (returns point list [x,y,z][])
- * -------------------------------------------------------------------- */
     integrateGeodesic = (tv, steps = 300) => {
 
         const pts  = [];
@@ -77,7 +86,7 @@ export default class BHGeometry{
             const pos = this.parameterization(u,t)
             pts.push([pos.x,pos.y,pos.z]);
 
-            state = this.geoInt.step(state);
+            state = this.geodesicEqn.step(state);
             if (this._outside(state.pos)) {
                 break;
             }
@@ -85,7 +94,14 @@ export default class BHGeometry{
         return pts;
     }
 
+    parallelTransport(coordCurve,domain=[0,1]){
+        //return an interpolating function for basis along curve
+        console.log('Need to Implement ParallelTransport')
+    }
 
-
+    rebuild(R){
+        this.R=R;
+        this._buildEmbeddingCoords();
+    }
 
 }

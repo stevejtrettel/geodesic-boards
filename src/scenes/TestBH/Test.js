@@ -7,7 +7,7 @@ import {
 } from "three";
 
 import Vignette from "../../code/Vignette.js";
-import BHGeometry from "../../code/diffgeo/BHGeometry.js";
+import BhOld from "../../code/diffgeo/BHGeometry.js";
 import TangentVector from "../../code/diffgeo/TangentVector.js";
 import Geodesic from "../../code/geodesics/Geodesic.js";
 import ParametricSurface from "../../code/meshes/ParametricSurface.js";
@@ -25,7 +25,7 @@ class Test extends Vignette {
 
         this.bhGroup = new Group();
 
-        this.bh = new BHGeometry(R);
+        this.bh = new BhOld(R);
 
         //make the geodesic
         let geoMat = new MeshPhysicalMaterial({color:0xffcb30,clearcoat:1,});

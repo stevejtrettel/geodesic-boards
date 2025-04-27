@@ -5,12 +5,11 @@ import {
 } from "three";
 
 import Vignette from "../../code/Vignette.js";
-import Surface from "../../code/diffgeo/Surface.js";
 import TangentVector from "../../code/diffgeo/TangentVector.js";
 import GeodesicSpray from "../../code/geodesics/GeodesicSpray.js";
 import GeodesicStripes from "../../code/geodesics/GeodesicStripes.js";
 import ParametricSurface from "../../code/meshes/ParametricSurface.js";
-
+import GraphGeometry from "../../code/diffgeo/GraphGeometry.js";
 
 
 class Test extends Vignette {
@@ -28,13 +27,11 @@ class Test extends Vignette {
         //build the surface we will work with
         let dom = [[-2,2],[-3,3]];
 
-        let surf = new Surface(this.eqn, dom, this.params);
+        let surf = new GraphGeometry(this.eqn, dom, this.params);
         this.surf = surf;
 
-
         const blockMat = new MeshPhysicalMaterial({ color: 0xff2a00, metalness: 0, roughness: 0.3,side:DoubleSide });
-        this.block = new ParametricSurface(this.surf.math.parametric, this.surf.domain,blockMat);
-
+        this.block = new ParametricSurface(this.surf.parameterization, this.surf.domain,blockMat);
 
         //make the geodesic
         let tv = new TangentVector(new Vector2(1,-1),new Vector2(-0.2,1));
@@ -46,9 +43,11 @@ class Test extends Vignette {
             metalness:1,
             roughness:0.,
         });
-        this.spray = new GeodesicSpray(surf,undefined,undefined,chromeMaterial);
 
-        this.stripes = new GeodesicStripes(surf);
+        let yellowMat = new MeshPhysicalMaterial({color:0xffea2b, clearcoat:1,});
+        this.spray = new GeodesicSpray(surf,undefined,undefined,yellowMat);
+
+         this.stripes = new GeodesicStripes(surf);
 
         this.animateParams = {
             animateSpray:true,
@@ -73,12 +72,12 @@ class Test extends Vignette {
 
     addToUI(ui){
 
-        ui.add(this,'eqn').onFinishChange(value=> {
-            this.eqn=value;
-            this.surf.rebuild(this.eqn);
-            this.block.redraw();
-            this.animateParams.needsUpdate=true;
-        });
+        // ui.add(this,'eqn').onFinishChange(value=> {
+        //     this.eqn=value;
+        //     this.surf.rebuild(this.eqn);
+        //     this.block.redraw();
+        //     this.animateParams.needsUpdate=true;
+        // });
 
         ui.add(this.params,'a',0,2,0.01).onChange(value=> {
             this.animateParams.needsUpdate=true;
@@ -122,7 +121,7 @@ class Test extends Vignette {
         if(this.animateParams.needsUpdate){
             this.stripes.redraw();
             this.spray.redraw();
-            this.block.update();
+            this.block.redraw();
             this.animateParams.needsUpdate=false;
         }
     }

@@ -1,5 +1,7 @@
 import {Vector2} from "three";
 import GeodesicArray from "./GeodesicArray.js";
+import Curve from "../interpolators/Curve.js";
+import TangentVector from "../diffgeo/TangentVector.js";
 
 let defaultProps = {
     pos: 0.5,
@@ -15,15 +17,31 @@ export default class GeodesicStripes extends GeodesicArray{
 
     }
 
+    _initialize(){
+
+        const [[x0, x1], [y0, y1]] = this.surface.domain;
+
+        this.curve =new Curve(t => new Vector2(x0 + t * (x1 - x0), y0));
+
+        this.parallel = this.surface.parallelTransport(this.curve);
+    }
+
     //the only method that needs to be build is initial tangents
     setIni(){
-        let V = new Vector2(Math.sin(this.properties.angle),Math.cos(this.properties.angle));
 
+        let V = new Vector2(Math.sin(this.properties.angle),Math.cos(this.properties.angle));
         for(let i=0; i<this.N; i++){
+
             let offset = i/this.N-0.5;
             let t = this.properties.pos+this.properties.spread*offset;
-            this.ini[i] = this.surface.boundaryTransport(t,V);
+
+            let basis = this.parallel(t);
+
+            let newPos = this.curve.getPoint(t);
+            let newV = basis[0].multiplyScalar(V.x).add(basis[1].multiplyScalar(V.y));
+            this.ini[i] = new TangentVector(newPos, newV);
         }
+
     }
 
 }

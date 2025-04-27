@@ -19,7 +19,7 @@ export default class ParametricSurface extends Mesh {
         this.domain=domain;
     }
 
-    redraw(eqn){
+    redraw(eqn=this.eqn){
         this.eqn = eqn;
         this.geometry.dispose();
         this.geometry = new ParametricSurfaceGeometry(this.eqn,this.domain);

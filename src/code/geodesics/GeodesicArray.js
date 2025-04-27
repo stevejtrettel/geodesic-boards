@@ -13,6 +13,9 @@ export default class GeodesicArray extends Group{
         this.properties = properties;
         this.material = material;
 
+        //build any internal things that are needed to set initial conditions
+        this._initialize();
+
         this.ini = new Array(this.N);
         this.setIni();
 
@@ -24,6 +27,10 @@ export default class GeodesicArray extends Group{
             this.add(geo);
         }
 
+    }
+
+    _initialize(){
+        //to fill in in each individual
     }
 
     setIni(){
