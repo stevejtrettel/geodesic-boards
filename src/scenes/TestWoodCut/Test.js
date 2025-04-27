@@ -38,7 +38,7 @@ class Test extends Vignette {
         //make the geodesic
         let tv = new TangentVector(new Vector2(1,-1),new Vector2(-0.2,1));
 
-      //  this.geo = new Geodesic(surf,tv);
+        //  this.geo = new Geodesic(surf,tv);
 
         let chromeMaterial = new MeshPhysicalMaterial({
             color:0x858282,
@@ -65,7 +65,7 @@ class Test extends Vignette {
 
     addToScene(scene){
         scene.add(this.block);
-       // scene.add(this.geo);
+        // scene.add(this.geo);
         scene.add(this.spray);
         scene.add(this.stripes);
     }
@@ -130,3 +130,6 @@ class Test extends Vignette {
 
 
 export default Test;
+
+
+

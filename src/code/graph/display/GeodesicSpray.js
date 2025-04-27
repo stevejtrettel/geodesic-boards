@@ -3,7 +3,7 @@ import TangentVector from "../../components/integrators/TangentVector.js";
 import GeodesicArray from "./GeodesicArray.js";
 
 let defaultProps = {
-    pos: new Vector2(-1,-0.5),
+    pos: new Vector2(2.,-0.5),
     angle: 0,
     radius:0.02,
     spread:2,
