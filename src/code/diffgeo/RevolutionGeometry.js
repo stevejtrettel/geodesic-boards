@@ -202,38 +202,64 @@ export default class RevolutionGeometry extends DiffGeo{
         return pts;
     }
 
+    integrateGeodesicCoords(tv, steps = 300) {
 
-    parallelTransport(coordCurve){
-        //return an interpolating function for basis along curve
-        //coordCurve goes from 0 to 1
-        //X and Y are our COORDINATES
-
-        const integrator  = new TransportIntegrator(coordCurve, this.dTransport);
-
-        const steps = 100;
-        const Ts = [], Xs = [], Ys = [];
-
-        let X = new Vector2(1, 0), Y = new Vector2(0, 1);
-        Ts.push(0); Xs.push(X.clone()); Ys.push(Y.clone());
+        const pts  = [];
+        let state  = tv.clone();
 
         for (let i = 0; i < steps; ++i) {
-            const t = i / steps;
-            X = integrator.step(t - 1 / steps, X);
-            Y = integrator.step(t - 1 / steps, Y);
-            Ts.push(t);
-            Xs.push(X.clone());
-            Ys.push(Y.clone());
+
+            const u = state.pos.x;
+            const t = state.pos.y;
+            pts.push([u,t]);
+
+            state = this.geodesicEqn.step(state);
+            if (this._outside(state.pos)) break;
         }
 
-        const XTransport = createCatmullRomVec(Ts,Xs);
-        const YTransport = createCatmullRomVec(Ts,Ys);
-        return (t)=>[XTransport(t),YTransport(t)];
+        return pts;
     }
+
+
+    getParallelTransport = (coordCurve) => {
+        //return an interpolating function for basis along curve
+        //coordCurve goes from 0 to 1
+        return new TransportIntegrator(coordCurve, this.dTransport,0.0005);
+    }
+    //
+    //
+    // parallelTransport(coordCurve){
+    //     //return an interpolating function for basis along curve
+    //     //coordCurve goes from 0 to 1
+    //     //X and Y are our COORDINATES
+    //
+    //     const integrator  = new TransportIntegrator(coordCurve, this.dTransport);
+    //
+    //     const steps = 100;
+    //     const Ts = [], Xs = [], Ys = [];
+    //
+    //     let X = new Vector2(1, 0), Y = new Vector2(0, 1);
+    //     Ts.push(0); Xs.push(X.clone()); Ys.push(Y.clone());
+    //
+    //     for (let i = 0; i < steps; ++i) {
+    //         const t = i / steps;
+    //         X = integrator.step(t - 1 / steps, X);
+    //         Y = integrator.step(t - 1 / steps, Y);
+    //         Ts.push(t);
+    //         Xs.push(X.clone());
+    //         Ys.push(Y.clone());
+    //     }
+    //
+    //     const XTransport = createCatmullRomVec(Ts,Xs);
+    //     const YTransport = createCatmullRomVec(Ts,Ys);
+    //     return (t)=>[XTransport(t),YTransport(t)];
+    // }
 
     rebuild(curveEqn){
         //rebuild: the other functions all call the derivatifes so don't need to be rebuilt
         this._setEquation(curveEqn);
         this._buildDerivatives();
     }
+
 
 }

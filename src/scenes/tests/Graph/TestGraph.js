@@ -10,12 +10,15 @@ import GeodesicSpray from "/src/code/geodesics/GeodesicSpray.js";
 import GeodesicStripes from "/src/code/geodesics/GeodesicStripes.js";
 import ParametricSurface from "/src/code/meshes/ParametricSurface.js";
 import GraphGeometry from "/src/code/diffgeo/GraphGeometry.js";
+import {downloadTextFile} from "../../../code/utils/downloadTextFile";
 
 
 export default class TestGraph extends Vignette {
 
     constructor() {
         super();
+
+
 
         this.eqn = `a*exp(-x^2-y^2)+sin(b*x)*sin(b*y)/4.`;
 
@@ -66,6 +69,16 @@ export default class TestGraph extends Vignette {
             needsUpdate:false,
         }
 
+
+
+        this.download = ()=>{
+            let string = ``;
+            string += this.surf.printToString();
+            string += this.stripes.printToSring();
+
+            downloadTextFile('graph.txt',string);
+        }
+
     }
 
     addToScene(scene){
@@ -77,12 +90,11 @@ export default class TestGraph extends Vignette {
 
     addToUI(ui){
 
-        // ui.add(this,'eqn').onFinishChange(value=> {
-        //     this.eqn=value;
-        //     this.surf.rebuild(this.eqn);
-        //     this.block.redraw();
-        //     this.animateParams.needsUpdate=true;
-        // });
+        ui.add(this,'eqn').onFinishChange(value=> {
+            this.eqn=value;
+            this.surf.rebuild(this.eqn);
+            this.animateParams.needsUpdate=true;
+        });
 
         ui.add(this.params,'a',0,2,0.01).onChange(value=> {
             this.animateParams.needsUpdate=true;
@@ -121,6 +133,8 @@ export default class TestGraph extends Vignette {
         stripes.add(this.animateParams,'spreadStripes',0.05,2,0.01).onChange(value=>{
             this.stripes.update({spread:value});
         });
+
+        ui.add(this,'download');
 
     }
 

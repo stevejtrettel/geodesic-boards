@@ -10,9 +10,9 @@ let defaultMat = new MeshPhysicalMaterial({
 });
 
 export default class ParametricSurface extends Mesh {
-    constructor(eqn,domain = [[0,1],[0,1]], material = defaultMat ) {
+    constructor(eqn,domain = [[0,1],[0,1]], material = defaultMat,res=128 ) {
 
-        let geometry = new ParametricSurfaceGeometry(eqn,domain);
+        let geometry = new ParametricSurfaceGeometry(eqn,domain,res,res);
         super(geometry,material);
 
         this.eqn = eqn;

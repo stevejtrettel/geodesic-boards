@@ -9,13 +9,18 @@ export default class DiffGeo{
         console.log('Need to Implement Parameterization')
     }
 
-    surfaceNormal(coords){
+    surfaceNormal= (u,v)=>{
         console.log('Need to Implement GetNormal')
     }
 
     integrateGeodesic(tv){
         //parameterized geodesic in R3
         console.log('Need to Implement IntegrateGeodesic')
+    }
+
+    integrateGeodesicCoords(tv){
+        //geodesic in coordinates
+        console.log('Need to Implement IntegrateGeodesicCoords')
     }
 
     getParallelTransport(coordCurve){

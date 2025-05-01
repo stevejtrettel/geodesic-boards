@@ -56,4 +56,13 @@ export default class GeodesicArray extends Group{
     }
 
 
+    printToSring(numPts) {
+        let string = ``;
+        for(let i=0; i<this.N;i++){
+            string += this.geodesics[i].printToSring(numPts);
+        }
+        return string;
+    }
+
+
 }

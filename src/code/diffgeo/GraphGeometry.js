@@ -1,7 +1,6 @@
 //replacement for DiffGeo and Surface classes
 import {Vector2, Vector3} from "three";
 import { parse,simplify,derivative } from 'mathjs/number';
-// const math = create(all); // light-weight math.js bundle
 
 import {fromMathJS} from "../utils/fromMathJS.js";
 import {toGLSL} from "../utils/toGLSL.js";
@@ -208,6 +207,31 @@ export default class GraphGeometry extends DiffGeo{
         return pts;
     }
 
+    integrateGeodesicCoords(tv,steps=1000){
+        //a version of the above method that gives us the COORDINATE rep of the geodesic, instead
+        //of plugging into the parameterization for us
+        const pts  = [];
+        let state  = tv.clone();
+
+        //if tv is out of domain: return a list with just the origin and log an error
+        if (this._outside(state.pos)) {
+            console.error('Initial condition for geodesic outside of domain');
+            return [new Vector2(100,100),new Vector2(100,100)];
+        }
+
+        //otherwise, integrate away!
+        for (let i = 0; i < steps; ++i) {
+
+            //just the coordinates
+            pts.push(state.pos.clone());
+
+            state = this.geodesicEqn.step(state);
+            if (this._outside(state.pos)) break;
+        }
+
+        return pts;
+    }
+
     getParallelTransport = (coordCurve) => {
         //return an interpolating function for basis along curve
         //coordCurve goes from 0 to 1
@@ -215,9 +239,22 @@ export default class GraphGeometry extends DiffGeo{
     }
 
     rebuild(eqn){
-        //rebuild: the other functions all call the derivatifes so don't need to be rebuilt
+        //rebuild: the other functions all call the derivatives so don't need to be rebuilt
         this.eqn=eqn;
         this._buildDerivatives();
+    }
+
+    printToString(){
+        let string = ``;
+
+        const eqn = simplify(this.eqn, this.parameters);   // <- substitution happens here
+        string += toGLSL(eqn);
+        string += `\n`;
+        string += `{ x: (${this.domain[0][0]},${this.domain[0][1]}), y:(${this.domain[1][0]},${this.domain[1][1]}) }`;
+            //`[${this.domain[0]}],[${this.domain[1]}]`;
+        string += `\n\n`;
+        return string;
+
     }
 
 }

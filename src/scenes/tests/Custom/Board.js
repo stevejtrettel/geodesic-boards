@@ -7,6 +7,7 @@ import GeodesicStripes from "/src/code/geodesics/GeodesicStripes.js";
 import GraphGeometry from "/src/code/diffgeo/GraphGeometry.js";
 import GPUGraphSurface from "../../../code/meshes/GPUGraphSurface.js";
 import levelSetShader from "../../../code/shaders/levelSetShader.glsl"
+import {downloadTextFile} from "../../../code/utils/downloadTextFile.js";
 
 
 
@@ -19,7 +20,7 @@ export default class Board extends Vignette {
 
         this.params = {
             a:1,
-            b:0.5,
+            b: 2.5,
         };
 
         //build the surface we will work with
@@ -47,6 +48,16 @@ export default class Board extends Vignette {
 
             needsUpdate:false,
         }
+
+
+        this.download = ()=>{
+            let string = ``;
+            string += this.surf.printToString();
+            string += this.stripes.printToSring();
+
+            downloadTextFile('graph.txt',string);
+        }
+
 
     }
 
@@ -84,6 +95,9 @@ export default class Board extends Vignette {
         stripes.add(this.animateParams,'spreadStripes',0.05,2,0.01).onChange(value=>{
             this.stripes.update({spread:value});
         });
+
+
+        ui.add(this,'download');
 
     }
 
