@@ -105,6 +105,22 @@ export default class GraphGeometry extends DiffGeo{
         // 1) parse & simplify once
         const nodeF      = parse(this.eqn);
         const paramNames = Object.keys(this.parameters);
+
+
+        //compile to standard JS using our own function
+        const compile = src => {
+            try {
+                return fromMathJS(src, {
+                    vars: ['x', 'y'],
+                    params: paramNames,
+                    paramsObj: this.parameters
+                });
+            }
+            catch{ return null;}
+        };
+
+
+/*
         const make       = src =>
             fromMathJS(src, {
                 vars:      ['x','y'],
@@ -119,6 +135,7 @@ export default class GraphGeometry extends DiffGeo{
             // try { return make(node); }
             // catch { return null; }
         };
+*/
 
         // helper to get a simplified node derivative
         const d = (n,v) => simplify(derivative(n, v));
@@ -133,12 +150,12 @@ export default class GraphGeometry extends DiffGeo{
 
 
         // 3) compile to JS functions (with numeric fallback)
-        this.f   = tryCompile(nodeF) || ((x,y) => 1);
-        this.fx  = tryCompile(fxNode);
-        this.fy  = tryCompile(fyNode);
-        this.fxx = tryCompile(fxxNode);
-        this.fxy = tryCompile(fxyNode);
-        this.fyy = tryCompile(fyyNode);
+        this.f   = compile(nodeF);
+        this.fx  = compile(fxNode);
+        this.fy  = compile(fyNode);
+        this.fxx = compile(fxxNode);
+        this.fxy = compile(fxyNode);
+        this.fyy = compile(fyyNode);
 
         // numeric fallback if any failed
         const h = 1e-5, f = this.f;

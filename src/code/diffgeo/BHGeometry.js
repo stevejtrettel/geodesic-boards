@@ -7,16 +7,13 @@ import {toGLSL} from "../utils/toGLSL.js";
 
 export default class BHGeometry extends DiffGeo{
 
-    constructor(R) {
+    constructor(R, domain = null) {
         super();
 
         this.R = R;
 
         //domain 3/2R is the Event Horizon, 9/8 is embedding limit
-        this.domain = [3/2*this.R,30*this.R];
-
-        const [r0,r1] = this.domain;
-        this._outside = (pos) => (pos.x < r0 || pos.x > r1);
+        this._setDomain(domain);
 
         //scratch for not generating things a bajillion times
         this.scratch = new Vector2();
@@ -44,6 +41,19 @@ export default class BHGeometry extends DiffGeo{
         this.geodesicEqn = new Symplectic2(this.acceleration, 0.02);
 
 
+
+    }
+
+    _setDomain(dom=null){
+        if(dom){
+            this.domain=dom;
+        }
+        else{
+            this.domain = [3 / 2 * this.R, 30 * this.R];
+        }
+
+        const [r0,r1] = this.domain;
+        this._outside = (pos) => (pos.x < r0 || pos.x > r1);
 
     }
 
@@ -127,8 +137,9 @@ export default class BHGeometry extends DiffGeo{
         return new TransportIntegrator(coordCurve, trivialTransport);
     }
 
-    rebuild(R){
+    rebuild(R,dom=null){
         this.R=R;
+        this._setDomain(dom)
         this._buildEmbeddingCoords();
     }
 

@@ -5,7 +5,6 @@ import {
 } from "three";
 
 import Vignette from "/src/code/Vignette.js";
-import TangentVector from "/src/code/diffgeo/TangentVector.js";
 import GeodesicSpray from "/src/code/geodesics/GeodesicSpray.js";
 import GeodesicStripes from "/src/code/geodesics/GeodesicStripes.js";
 import ParametricSurface from "/src/code/meshes/ParametricSurface.js";
@@ -13,7 +12,7 @@ import GraphGeometry from "/src/code/diffgeo/GraphGeometry.js";
 import {downloadTextFile} from "../../../code/utils/downloadTextFile";
 
 
-export default class TestGraph extends Vignette {
+export default class Board extends Vignette {
 
     constructor() {
         super();
@@ -36,16 +35,6 @@ export default class TestGraph extends Vignette {
         const blockMat = new MeshPhysicalMaterial({ color: 0xff2a00, metalness: 0, roughness: 0.3,side:DoubleSide });
         this.block = new ParametricSurface(this.surf.parameterization, this.surf.domain,blockMat);
 
-        //make the geodesic
-        let tv = new TangentVector(new Vector2(1,-1),new Vector2(-0.2,1));
-
-        //  this.geo = new Geodesic(surf,tv);
-
-        let chromeMaterial = new MeshPhysicalMaterial({
-            color:0x858282,
-            metalness:1,
-            roughness:0.,
-        });
 
         let yellowMat = new MeshPhysicalMaterial({color:0xffea2b, clearcoat:1,});
         this.spray = new GeodesicSpray(surf,undefined,undefined,yellowMat);
@@ -70,14 +59,14 @@ export default class TestGraph extends Vignette {
         }
 
 
-
-        this.download = ()=>{
-            let string = ``;
-            string += this.surf.printToString();
-            string += this.stripes.printToSring();
-
-            downloadTextFile('graph.txt',string);
-        }
+        //
+        // this.download = ()=>{
+        //     let string = ``;
+        //     string += this.surf.printToString();
+        //     string += this.stripes.printToSring();
+        //
+        //     downloadTextFile('graph.txt',string);
+        // }
 
     }
 
@@ -134,16 +123,12 @@ export default class TestGraph extends Vignette {
             this.stripes.update({spread:value});
         });
 
-        ui.add(this,'download');
+        // ui.add(this,'download');
 
     }
 
 
     tick(time,dTime){
-
-        // let v = new Vector2(Math.cos(time),Math.sin(time));
-        // let tv = new TangentVector(new Vector2(1,-1),v);
-        // this.geo.update(tv);
 
         if(this.animateParams.animateSpray) {
             this.spray.update({angle: 2+time, pos: new Vector2(Math.cos(time), Math.sin(2 * time))});

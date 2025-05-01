@@ -1,5 +1,12 @@
+#include ./components/colors.glsl
+#include ./components/levelSets.glsl
+
+
+
 // varyings from your vertex shader
-varying float vCurvature;
+varying float vGaussCurve;
+varying float vMeanCurve;
+varying vec2 vSectionalCurve;
 varying vec2  vUv;
 varying float vZ;
 
@@ -21,24 +28,6 @@ varying float vZ;
 
 
 
-vec3 hsb2rgb( in vec3 c ){
-    vec3 rgb = clamp(abs(mod(c.x*6.0+vec3(0.0,4.0,2.0),
-    6.0)-3.0)-1.0,
-    0.0,
-    1.0 );
-    rgb = rgb*rgb*(3.0-2.0*rgb);
-    return c.z * mix( vec3(1.0), rgb, c.y);
-}
-
-
-float scalarGrid(float x, float scale){
-    float spacing = 3.1416*scale;
-    float grid1 = (1.-pow(abs(sin(spacing*x)),0.1))/10.;
-    float grid2 = (1.-pow(abs(sin(5.*spacing*x)),0.1))/25.;
-    float grid3 = (1.-pow(abs(sin(10.*spacing *x)),0.1))/50.;
-    return grid1+grid2+grid3;
-}
-
 
 
 void main(){
@@ -57,7 +46,7 @@ void main(){
     float light =0.5;
     vec3 base = hsb2rgb(vec3(hue,sat,light));
 
-    float grid = scalarGrid(z, 2.);
+    float grid = levelSets(z, 2.);
     vec3 col = base + 3.*vec3(grid);
 
     csm_DiffuseColor = vec4(col,1);

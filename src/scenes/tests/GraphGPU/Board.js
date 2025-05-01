@@ -6,8 +6,7 @@ import Vignette from "/src/code/Vignette.js";
 import GeodesicStripes from "/src/code/geodesics/GeodesicStripes.js";
 import GraphGeometry from "/src/code/diffgeo/GraphGeometry.js";
 import GPUGraphSurface from "../../../code/meshes/GPUGraphSurface.js";
-import levelSetShader from "../../../code/shaders/levelSetShader.glsl"
-import {downloadTextFile} from "../../../code/utils/downloadTextFile.js";
+import fragmentShader from "../../../code/shaders/gaussCurvatureShader.glsl"
 
 
 
@@ -29,7 +28,7 @@ export default class Board extends Vignette {
         let surf = new GraphGeometry(this.eqn, dom, this.params);
         this.surf = surf;
 
-        this.block = new GPUGraphSurface(this.surf, {fragmentShader:levelSetShader});
+        this.block = new GPUGraphSurface(this.surf, {fragmentShader:fragmentShader});
 
         const stripeMat = new MeshPhysicalMaterial({
             color:0x000000,
@@ -48,16 +47,6 @@ export default class Board extends Vignette {
 
             needsUpdate:false,
         }
-
-
-        this.download = ()=>{
-            let string = ``;
-            string += this.surf.printToString();
-            string += this.stripes.printToSring();
-
-            downloadTextFile('graph.txt',string);
-        }
-
 
     }
 
@@ -95,9 +84,6 @@ export default class Board extends Vignette {
         stripes.add(this.animateParams,'spreadStripes',0.05,2,0.01).onChange(value=>{
             this.stripes.update({spread:value});
         });
-
-
-        ui.add(this,'download');
 
     }
 

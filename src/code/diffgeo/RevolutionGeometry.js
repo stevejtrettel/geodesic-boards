@@ -1,7 +1,6 @@
 import {Vector2, Vector3} from "three";
 
-import { create, all } from 'mathjs/number';
-const math = create(all); // light-weight math.js bundle
+import { parse,simplify,derivative } from 'mathjs/number';
 
 import DiffGeo from "./DiffGeo-Abstract.js";
 import Symplectic2 from "../integrators/Symplectic2.js";
@@ -115,8 +114,8 @@ export default class RevolutionGeometry extends DiffGeo{
     _buildDerivatives() {
 
         // 1) parse & simplify once
-        const nodeR      = math.parse(this.rEqn);
-        const nodeH      = math.parse(this.hEqn);
+        const nodeR      = parse(this.rEqn);
+        const nodeH      = parse(this.hEqn);
         const paramNames = Object.keys(this.parameters);
 
         //compile to standard JS using our own function
@@ -128,7 +127,7 @@ export default class RevolutionGeometry extends DiffGeo{
             });
 
         // helper to get a simplified node derivative
-        const d = (n,v) => math.simplify(math.derivative(n, v));
+        const d = (n,v) => simplify(derivative(n, v));
 
         // 2) build symbolic ASTs for each
         const nodeRu  = d(nodeR,    'u');
@@ -151,13 +150,13 @@ export default class RevolutionGeometry extends DiffGeo{
         // 4) capture GLSL‐compatible code strings
         //  These strings can be inlined into the shader as:
         // float r(float u) { return <this.glsl_r>; }
-        this.glsl_r   = toGLSL(nodeR.toString());
-        this.glsl_ru  = toGLSL(nodeRu.toString());
-        this.glsl_ruu  = toGLSL(nodeRuu.toString());
+        this.glsl_r   = toGLSL(nodeR);
+        this.glsl_ru  = toGLSL(nodeRu);
+        this.glsl_ruu  = toGLSL(nodeRuu);
 
-        this.glsl_h   = toGLSL(nodeH.toString());
-        this.glsl_hu  = toGLSL(nodeHu.toString());
-        this.glsl_huu  = toGLSL(nodeHuu.toString());
+        this.glsl_h   = toGLSL(nodeH);
+        this.glsl_hu  = toGLSL(nodeHu);
+        this.glsl_huu  = toGLSL(nodeHuu);
 
     }
 

@@ -6,7 +6,7 @@ import defaultLights from "/src/world/environment/lights/defaultLights";
 import gridFloor from "/src/world/environment/objects/gridFloor";
 // import BoxNoLights from "../../world/environment/background/examples/BoxNoLights.js";
 
-import OurVignette from "./TestGraph";
+import OurVignette from "./Board";
 
 
 // Put a container into the HTML named "World" to store our program
@@ -14,13 +14,14 @@ import OurVignette from "./TestGraph";
 
 // 1. Create an instance of the World class
 const world = new World(  );
-world.setView({x:0,y:0,z:10});
+
+world.setView({x:18,y:3,z:12});
 
 // 2. Build the Environment for the world:
 const environment = new Environment();
 environment.setBackground(new SkyBox());
 environment.lights = defaultLights;
-environment.addObject(gridFloor);
+// environment.addObject(gridFloor);
 //environment.shadows=true;
 
 //add it to the world
