@@ -1,15 +1,16 @@
 //replacement for DiffGeo and Surface classes
 import {Vector2, Vector3} from "three";
-import { create, all } from 'mathjs/number';
-const math = create(all); // light-weight math.js bundle
+import { parse,simplify,derivative } from 'mathjs/number';
+// const math = create(all); // light-weight math.js bundle
 
 import {fromMathJS} from "../utils/fromMathJS.js";
 import {toGLSL} from "../utils/toGLSL.js";
-import Symplectic2 from "../integrators/Symplectic2.js";
 import TransportIntegrator from "../integrators/TransportIntegrator.js";
-import {createCatmullRomVec} from "../interpolators/catmullRomVector.js";
 import DiffGeo from "./DiffGeo-Abstract.js";
 import RungeKutta from "../integrators/RungeKutta.js";
+
+
+
 
 export default class GraphGeometry extends DiffGeo{
     constructor(eqn, domain = [[0, 1],[0, 1]], parameters = {}) {
@@ -19,6 +20,7 @@ export default class GraphGeometry extends DiffGeo{
         this.eqn        = eqn;
         this.domain     = domain;
         this.parameters = parameters;
+
 
         //domain guard
         const [[x0, x1], [y0, y1]] = domain;
@@ -98,10 +100,11 @@ export default class GraphGeometry extends DiffGeo{
     * Internals
     * ---------------------------------------------------------------- */
 
+
     _buildDerivatives() {
 
         // 1) parse & simplify once
-        const nodeF      = math.parse(this.eqn);
+        const nodeF      = parse(this.eqn);
         const paramNames = Object.keys(this.parameters);
         const make       = src =>
             fromMathJS(src, {
@@ -119,7 +122,7 @@ export default class GraphGeometry extends DiffGeo{
         };
 
         // helper to get a simplified node derivative
-        const d = (n,v) => math.simplify(math.derivative(n, v));
+        const d = (n,v) => simplify(derivative(n, v));
 
 
         // 2) build symbolic ASTs for each
@@ -153,12 +156,13 @@ export default class GraphGeometry extends DiffGeo{
         // 4) capture GLSL‐compatible code strings
         //  These strings can be inlined into the shader as:
         // float fx(float x, float y) { return <this.glsl_fx>; }
-        this.glsl_f   = toGLSL(nodeF.toString());
-        this.glsl_fx  = toGLSL(fxNode.toString());
-        this.glsl_fy  = toGLSL(fyNode.toString());
-        this.glsl_fxx = toGLSL(fxxNode.toString());
-        this.glsl_fxy = toGLSL(fxyNode.toString());
-        this.glsl_fyy = toGLSL(fyyNode.toString());
+
+        this.glsl_f   = toGLSL(nodeF);
+        this.glsl_fx  = toGLSL(fxNode);
+        this.glsl_fy  = toGLSL(fyNode);
+        this.glsl_fxx = toGLSL(fxxNode);
+        this.glsl_fxy = toGLSL(fxyNode);
+        this.glsl_fyy = toGLSL(fyyNode);
 
     }
 
@@ -175,7 +179,7 @@ export default class GraphGeometry extends DiffGeo{
     surfaceNormal = (x,y) => {
         let fx = this.fx(x,y);
         let fy = this.fy(x,y);
-        return this.scratch.set(-fx,-fy,1).normalize();
+        return new Vector3(-fx,-fy,1).normalize();
     }
 
     integrateGeodesic(tv, steps = 1000) {
