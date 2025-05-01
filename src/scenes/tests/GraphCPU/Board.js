@@ -9,15 +9,15 @@ import GeodesicSpray from "/src/code/geodesics/GeodesicSpray.js";
 import GeodesicStripes from "/src/code/geodesics/GeodesicStripes.js";
 import ParametricSurface from "/src/code/meshes/ParametricSurface.js";
 import GraphGeometry from "/src/code/diffgeo/GraphGeometry.js";
-import {downloadTextFile} from "../../../code/utils/downloadTextFile";
+import FragmentMaterial from "../../../code/materials/FragmentMaterial.js";
+
+
 
 
 export default class Board extends Vignette {
 
     constructor() {
         super();
-
-
 
         this.eqn = `a*exp(-x^2-y^2)+sin(b*x)*sin(b*y)/4.`;
 
@@ -32,9 +32,10 @@ export default class Board extends Vignette {
         let surf = new GraphGeometry(this.eqn, dom, this.params);
         this.surf = surf;
 
-        const blockMat = new MeshPhysicalMaterial({ color: 0xff2a00, metalness: 0, roughness: 0.3,side:DoubleSide });
-        this.block = new ParametricSurface(this.surf.parameterization, this.surf.domain,blockMat);
+       // const blockMat = new MeshPhysicalMaterial({ color: 0xff2a00, metalness: 0, roughness: 0.3,side:DoubleSide });
+        const blockMat = new FragmentMaterial();
 
+        this.block = new ParametricSurface(this.surf.parameterization, this.surf.domain,blockMat);
 
         let yellowMat = new MeshPhysicalMaterial({color:0xffea2b, clearcoat:1,});
         this.spray = new GeodesicSpray(surf,undefined,undefined,yellowMat);

@@ -119,6 +119,7 @@ float fyy (float x,float y){ return ${this.geo.glsl_fyy};}
 varying float vGaussCurve;
 varying float vMeanCurve;
 varying vec2 vSectionalCurve;
+varying vec3 vPosition;
 
 varying float vZ;
 varying vec2  vUv;
@@ -177,6 +178,7 @@ void main(){
     // lift & set normal
     vec3 displaced = position;
     displaced.z += z;
+    vPosition = displaced;
     csm_Position = displaced;
     csm_Normal   = normalize(vec3(-Fx, -Fy, 1.0));
 }

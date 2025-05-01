@@ -11,6 +11,12 @@ import {downloadTextFile} from "../../../code/utils/downloadTextFile.js";
 
 
 
+
+
+
+
+
+
 export default class Board extends Vignette {
 
     constructor() {

@@ -11,8 +11,10 @@ import BHGeometry from "/src/code/diffgeo/BHGeometry.js";
 import TangentVector from "/src/code/diffgeo/TangentVector.js";
 import Geodesic from "/src/code/geodesics/Geodesic.js";
 import ParametricSurface from "/src/code/meshes/ParametricSurface.js";
-import GeodesicSpray from "/src/code/geodesics/GeodesicSpray.js";
 import {downloadTextFile} from "../../../code/utils/downloadTextFile.js";
+import wood from "../../../code/shaders/components/wood.glsl"
+import FragmentMaterial from "../../../code/materials/FragmentMaterial.js";
+
 
 
 
@@ -33,26 +35,43 @@ export default class Board extends Vignette {
         // console.log(this.bh.height(6.02));
 
 
-        const bhMat = new MeshPhysicalMaterial({
-            color:0x000000,
-            clearcoat:1,
-            side:DoubleSide,
-        })
+
+
+        let fragmentShader = wood + `
+            varying vec3  vPosition;
+            void main() {
+                vec3 p = vec3(vPosition.z*vPosition.x,vPosition.x,vPosition.y);
+                csm_DiffuseColor = vec4(pow(matWood(p), vec3(.4545)),1);
+            }
+         `;
+
+
+        const bhMat = new FragmentMaterial(fragmentShader);
+
+        // const bhMat = new MeshPhysicalMaterial({
+        //     color:0x000000,
+        //     clearcoat:1,
+        //     side:DoubleSide,
+        // })
         let surfDomain = [this.bh.domain,[0,6.29]];
         this.surf = new ParametricSurface(this.bh.parameterization, surfDomain,bhMat);
 
         this.ini = {
             mass:0.095,
-            p0: 0,
-            a0:0.016,
-            p1:0,
-            a1:-0.033,
-            p2:1.96,
-            a2:0.01,
+            p0: 2.733,
+            a0:-0.029,
+            p1:2.733,
+            a1:-0.011,
+            p2:2.733,
+            a2:0.007,
         }
 
 
-        let geoMat = new MeshPhysicalMaterial({color:0xffcb30,clearcoat:1,});
+        let geoMat = new MeshPhysicalMaterial({
+            color:0x635149,
+            metalness:1,
+            roughness:0.,
+        });
 
         this.tv0 = new TangentVector(new Vector2(this.bh.domain[1],this.ini.p0),new Vector2(-Math.cos(this.ini.a0),Math.sin(this.ini.a0)))
         this.geo0 = new Geodesic(this.bh,this.tv0,0.05,geoMat);
@@ -114,7 +133,7 @@ export default class Board extends Vignette {
             this.geo0.update(this.tv0);
         });
 
-        f1.add(this.ini,'a0',-0.25,0.25,0.001).onChange(value=>{
+        f1.add(this.ini,'a0',-0.06,0.06,0.001).onChange(value=>{
             this.tv0.vel = new Vector2(-Math.cos(value),Math.sin(value));
             this.geo0.update(this.tv0);
         });
@@ -125,7 +144,7 @@ export default class Board extends Vignette {
             this.geo1.update(this.tv1);
         });
 
-        f2.add(this.ini,'a1',-0.25,0.25,0.001).onChange(value=>{
+        f2.add(this.ini,'a1',-0.06,0.06,0.001).onChange(value=>{
             this.tv1.vel = new Vector2(-Math.cos(value),Math.sin(value));
             this.geo1.update(this.tv1);
         });
@@ -137,7 +156,7 @@ export default class Board extends Vignette {
             this.geo2.update(this.tv2);
         });
 
-        f3.add(this.ini,'a2',-0.25,0.25,0.001).onChange(value=>{
+        f3.add(this.ini,'a2',-0.06,0.06,0.001).onChange(value=>{
             this.tv2.vel = new Vector2(-Math.cos(value),Math.sin(value));
             this.geo2.update(this.tv2);
         });
