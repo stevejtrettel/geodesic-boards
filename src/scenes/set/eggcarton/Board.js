@@ -1,26 +1,22 @@
 import {
     MeshPhysicalMaterial,
-    Vector2,
-    DoubleSide,
 } from "three";
 
 import Vignette from "/src/code/Vignette.js";
-import TangentVector from "/src/code/diffgeo/TangentVector.js";
-import GeodesicSpray from "/src/code/geodesics/GeodesicSpray.js";
 import GeodesicStripes from "/src/code/geodesics/GeodesicStripes.js";
-import GraphGeometry from "/src/code/diffgeo/GraphGeometry.js";
 import GPUGraphSurface from "../../../code/meshes/GPUGraphSurface.js";
+import GraphGeometry from "/src/code/diffgeo/GraphGeometry.js";
 
+import fragmentShader from "../../../code/shaders/designShader.glsl"
+import {downloadTextFile} from "../../../code/utils/downloadTextFile.js";
 
 
 const stripeParams = {
-    animate:false,
-    pos: 0.5,
-    angle: 0,
-    spread:0.84,
+    pos: 0.46,
+    angle: -0.26,
+    spread:0.75,
     radius:0.02,
 };
-
 
 
 export default class Board extends Vignette {
@@ -28,21 +24,23 @@ export default class Board extends Vignette {
     constructor() {
         super();
 
-        this.eqn = `a*exp(-b*( (x-c)*(x-c) + y*y))`;
+        this.eqn = `a*(sin(b*pi*x/3) + sin(b*pi*y/3))`;
 
         this.params = {
-            a:1.4,
-            b:0.5,
-            c:0.
+            a:0.375,
+            b:2.5,
         };
 
+
+
         //build the surface we will work with
-        let dom = [[-3,3],[-6,6]];
+        let dom = [[-3.125,3.125],[-6.125,6.125]];
 
         let surf = new GraphGeometry(this.eqn, dom, this.params);
         this.surf = surf;
 
-        this.block = new GPUGraphSurface(this.surf);
+        //this.block = new GPUGraphSurface(this.surf);
+        this.block = new GPUGraphSurface(this.surf, {fragmentShader:fragmentShader});
 
         let geodesicMaterial = new MeshPhysicalMaterial({
             color:0x635149,
@@ -58,9 +56,17 @@ export default class Board extends Vignette {
             radius: stripeParams.radius,
         };
 
-        this.stripes = new GeodesicStripes(surf,11,this.stripeParams,geodesicMaterial);
+        this.stripes = new GeodesicStripes(surf,12,this.stripeParams,geodesicMaterial);
 
         this.needsUpdate = false;
+
+        this.download = ()=>{
+            let string = ``;
+            string += this.surf.printToString();
+            string += this.stripes.printToSring();
+
+            downloadTextFile('Eggcarton.txt',string);
+        }
     }
 
     addToScene(scene){
@@ -70,23 +76,20 @@ export default class Board extends Vignette {
 
     addToUI(ui){
 
-        ui.add(this.params,'a',-2,2,0.01).onChange(value=> {
+        let surface = ui.addFolder('Surface');
+        surface.close();
+
+        surface.add(this.params,'a',0,1.5,0.01).name('Bump Height').onChange(value=> {
             this.needsUpdate=true;
         });
-        ui.add(this.params,'b',0,3,0.01).onChange(value=> {
-            this.needsUpdate=true;
-        });
-        ui.add(this.params,'c',-3,3,0.01).onChange(value=> {
+        surface.add(this.params,'b',0.,2,0.01).name('Bump Width').onChange(value=> {
             this.needsUpdate=true;
         });
 
 
         let stripes = ui.addFolder('Stripes');
         stripes.close();
-        stripes.add(this.stripeParams,'animate').onChange(value=>{if(!value){
-            this.stripes.update(stripeParams)
-        }});
-        stripes.add(this.stripeParams,'pos',0,1,0.001).onChange(value=>{
+        stripes.add(this.stripeParams,'pos',0,1,0.01).onChange(value=>{
             this.stripes.update({pos:value});
         });
         stripes.add(this.stripeParams,'angle',-2,2,0.01).onChange(value=>{
@@ -96,23 +99,21 @@ export default class Board extends Vignette {
             this.stripes.update({spread:value});
         });
 
+
+        ui.add(this,'download');
+
     }
 
 
     tick(time,dTime){
-
-        if(this.stripeParams.animate) {
-            this.stripes.update({spread: 0.2 * (2 + Math.sin(time)), pos: 0.5 + 0.2 * Math.sin(time)});
-        }
-        else if(this.needsUpdate){
+        if(this.needsUpdate){
             // // really should recompute transport
-            // this.stripes.recomputeTransport();
-            // this.stripes.update();
+            this.stripes.recomputeTransport();
+            this.stripes.update();
             this.stripes.redraw();
             this.needsUpdate=false;
         }
     }
-
 
 }
 

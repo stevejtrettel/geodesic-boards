@@ -40,7 +40,9 @@ function createContainer(name){
 
 
 class World{
-    constructor() {
+    constructor(params = {controls:true, ui:true}) {
+
+        this.setup = params;
 
         //basics
         this.updatables = [];
@@ -83,11 +85,15 @@ class World{
         this.composer.addPass( renderPass );
 
         //controls
-        this.controls = new OrbitControls(this.camera, this.container );
-        this.controls.tick = () => this.controls.update();
-        this.updatables.push(this.controls);
+        if(this.setup.controls) {
+            this.controls = new OrbitControls(this.camera, this.container);
+            this.controls.tick = () => this.controls.update();
+            this.updatables.push(this.controls);
+        }
 
-        this.ui = new GUI();
+        if(this.setup.ui) {
+            this.ui = new GUI();
+        }
 
         // setting the size: initially + with listening to the window
         this.setSize( this.container, this.camera, this.renderer );
@@ -102,6 +108,7 @@ class World{
         //LATER UPDATE THIS TO AN HONEST CLASS:
         //RIGHT NOW VIEW IS A VECTOR
         this.camera.position.set(view.x,view.y,view.z);
+        this.camera.lookAt(0,0,0);
 
         // //set some camera stuff
         // if (this.camera.tick) {

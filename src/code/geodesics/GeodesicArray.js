@@ -65,4 +65,23 @@ export default class GeodesicArray extends Group{
     }
 
 
+    setVisibility(bool){
+        for(let i=0; i<this.N; i++){
+            this.geodesics[i].setVisibility(bool);
+        }
+    }
+
+
+    dispose() {
+        //when we want to delete it
+        this.traverse(obj => {
+            if (obj.geometry) obj.geometry.dispose();
+            if (obj.material) {
+                (Array.isArray(obj.material) ? obj.material : [obj.material]).forEach(m => m.dispose());
+            }
+        });
+    }
+
+
+
 }

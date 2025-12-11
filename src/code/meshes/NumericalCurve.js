@@ -40,6 +40,12 @@ export default class NumericalCurve extends Group{
 
     }
 
+    setVisibility(bool){
+        this.curve.visible = bool;
+        this.start.visible=bool;
+        this.end.visible=bool;
+    }
+
     redraw(pts){
 
         this.curve.geometry.dispose();
@@ -50,5 +56,6 @@ export default class NumericalCurve extends Group{
         let endPos = pts.at(-1);
         this.end.position.set(endPos[0],endPos[1],endPos[2]);
     }
+
 
 }

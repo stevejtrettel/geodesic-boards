@@ -21,13 +21,14 @@ void main(){
 
 //    vec3 base = heightColor(vGaussCurve/10.);
 
-    float grid = levelSets(vGaussCurve, 2.);
-    vec3 col = base + 5.*vec3(grid);
+    //float grid = levelSets(vGaussCurve, 2.);
+    //vec3 col = base + 5.*vec3(grid);
+    vec3 col = base;
 
     float k1 = vSectionalCurve.x;
     float k2 = vSectionalCurve.y;
 
-    if(k1>2.|| k2>2.){
+    if(k1>4.|| k2>4.){
         col = vec3(1.,0,0);
     }
 
