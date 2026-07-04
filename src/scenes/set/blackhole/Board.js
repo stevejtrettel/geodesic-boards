@@ -92,11 +92,11 @@ export default class Board extends Vignette {
             let string = ``;
             string += this.bh.printToString();
             string += '\n\n'
-            string += this.geo0.printToSring();
-            string += this.geo1.printToSring();
-            string += this.geo2.printToSring();
-            string += this.geo3.printToSring();
-            string += this.geo4.printToSring();
+            string += this.geo0.printToString();
+            string += this.geo1.printToString();
+            string += this.geo2.printToString();
+            string += this.geo3.printToString();
+            string += this.geo4.printToString();
 
             downloadTextFile('bh.txt',string);
         }

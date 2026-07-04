@@ -87,9 +87,9 @@ export default class Board extends Vignette {
         this.download = ()=> {
             let string = ``;
             string += this.bh.printToString();
-            string += this.geo0.printToSring();
-            string += this.geo1.printToSring();
-            string += this.geo2.printToSring();
+            string += this.geo0.printToString();
+            string += this.geo1.printToString();
+            string += this.geo2.printToString();
 
             downloadTextFile('bh.txt',string);
         }

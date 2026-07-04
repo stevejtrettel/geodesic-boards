@@ -72,7 +72,7 @@ export default class Board extends Vignette {
         this.download = ()=>{
             let string = ``;
             string += this.surf.printToString();
-            string += this.stripes.printToSring();
+            string += this.stripes.printToString();
 
             downloadTextFile('BumpUp.txt',string);
         }

@@ -26,7 +26,7 @@ export default class Geodesic extends NumericalCurve{
     }
 
     //get points and surface normals for Edmund
-    printToSring(numPts = 500){
+    printToString(numPts = 500){
 
         const precision = 3.;//decimals to show
 

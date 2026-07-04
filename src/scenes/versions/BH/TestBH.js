@@ -56,7 +56,7 @@ export default class TestBH extends Vignette {
         this.download = ()=>{
             let string = ``;
             string += this.bh.printToString();
-            string += this.spray.printToSring();
+            string += this.spray.printToString();
 
             downloadTextFile('bh.txt',string);
         }
