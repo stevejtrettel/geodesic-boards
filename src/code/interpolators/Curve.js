@@ -1,7 +1,7 @@
 import {Vector3} from "three";
 
 import BaseCurve from "./BaseCurve.js";
-import TangentVector from "../diffgeo/TangentVector.js";
+import TangentVector from "@/code/diffgeo/TangentVector.js";
 
 
 //extends the abstract curve class in ThreeJS

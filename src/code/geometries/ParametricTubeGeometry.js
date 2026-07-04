@@ -1,5 +1,5 @@
 import { BufferGeometry,Float32BufferAttribute,Vector2,Vector3 } from 'three';
-import Curve from "../interpolators/Curve.js";
+import Curve from "@/code/interpolators/Curve.js";
 
 //extends the basic "buffer geometry" class
 //builds a geometry around a parametric tube given a function, start and end points

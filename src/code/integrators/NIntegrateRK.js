@@ -1,5 +1,5 @@
 
-import {createCatmullRom} from "../interpolators/catmullRom.js";
+import {createCatmullRom} from "@/code/interpolators/catmullRom.js";
 
 
 export function NIntegrateRK(f, domain, dx = 0.01) {

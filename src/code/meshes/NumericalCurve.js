@@ -1,5 +1,5 @@
 import {Group, MeshPhysicalMaterial, SphereGeometry, Mesh} from "three";
-import NumericalTubeGeometry from "../geometries/NumericalTubeGeometry.js";
+import NumericalTubeGeometry from "@/code/geometries/NumericalTubeGeometry.js";
 
 let defaultMat = new MeshPhysicalMaterial({
     color:0xffffff,

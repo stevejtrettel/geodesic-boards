@@ -1,5 +1,5 @@
 import {MeshPhysicalMaterial, Mesh, DoubleSide} from "three";
-import ParametricSurfaceGeometry from "../geometries/ParametricSurfaceGeometry.js";
+import ParametricSurfaceGeometry from "@/code/geometries/ParametricSurfaceGeometry.js";
 
 let defaultMat = new MeshPhysicalMaterial({
     color:0xffffff,

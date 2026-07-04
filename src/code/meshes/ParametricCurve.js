@@ -1,5 +1,5 @@
 import {Group, MeshPhysicalMaterial, SphereGeometry, Mesh} from "three";
-import ParametricTubeGeometry from "../geometries/ParametricTubeGeometry.js";
+import ParametricTubeGeometry from "@/code/geometries/ParametricTubeGeometry.js";
 
 
 let defaultMat = new MeshPhysicalMaterial({

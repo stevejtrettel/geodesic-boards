@@ -2,7 +2,7 @@
 //returns an interpolating function
 //integrating fn on domain
 
-import {createCatmullRom} from "../interpolators/catmullRom.js";
+import {createCatmullRom} from "@/code/interpolators/catmullRom.js";
 
 export function NIntegrate(f, domain, dx=0.01){
 

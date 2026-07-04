@@ -1,9 +1,9 @@
 import DiffGeo from "./DiffGeo-Abstract.js";
 import {Vector2, Vector3} from "three";
-import {NIntegrateRK} from "../integrators/NIntegrateRK.js";
-import Symplectic2 from "../integrators/Symplectic2.js";
-import TransportIntegrator from "../integrators/TransportIntegrator.js";
-import {toGLSL} from "../utils/toGLSL.js";
+import {NIntegrateRK} from "@/code/integrators/NIntegrateRK.js";
+import Symplectic2 from "@/code/integrators/Symplectic2.js";
+import TransportIntegrator from "@/code/integrators/TransportIntegrator.js";
+import {toGLSL} from "@/code/utils/toGLSL.js";
 
 export default class BHGeometry extends DiffGeo{
 

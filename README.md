@@ -16,7 +16,7 @@ npm install
 npm run dev
 ```
 
-Then open the local URL Vite prints. The scene that loads is whatever [index.html](index.html) points its `<script>` at — currently `src/scenes/momath-display/a/main.js`. Edit that one line to switch scenes.
+Then open the local URL Vite prints. The scene that loads is whatever [index.html](index.html) points its `<script>` at — currently `demos/momath-display/a/main.js`. Edit that one line to switch scenes.
 
 Requires Node and a WebGL2-capable browser.
 
@@ -60,9 +60,13 @@ That point-and-normal stream is what downstream CNC tool-path generation consume
 
 ```
 index.html                 single switchable entry (edit the <script src>)
-vite.config.js             Vite + vite-plugin-glsl (imports .glsl as strings)
+vite.config.js             Vite + vite-plugin-glsl, plus the @/ → src alias
+jsconfig.json              tells the editor about the @/ alias
 
-src/
+demos/                     runnable scenes, each a { main.js, Board.js } pair
+  design/  set/  momath-display/  versions/  old/
+
+src/                       shared library (imported as @/...)
   code/
     diffgeo/               surface geometry: Graph, Revolution, BH, TangentVector
     geodesics/             Geodesic, GeodesicArray, GeodesicSpray, GeodesicStripes
@@ -74,11 +78,11 @@ src/
     utils/                 fromMathJS, toGLSL, downloadTextFile
     interaction/           raycastUV (pointer → surface UV)
   world/                   Three.js harness: World, Environment, View, post
-  scenes/                  runnable scenes, each a { main.js, Board.js } pair
-    design/  set/  momath-display/  versions/  old/
 ```
 
-A **scene** is a `main.js` that builds a `World` and adds a `Board`; the `Board` (extending [`Vignette`](src/code/Vignette.js)) owns the surface, the stripes, the UI, and the download action. See [`src/scenes/momath-display/a/`](src/scenes/momath-display/a/) for a representative example with a preset-board button bar.
+Imports into the shared library use the `@/` alias (e.g. `import GraphGeometry from "@/code/diffgeo/GraphGeometry.js"`); imports between sibling files in a demo stay relative (`./Board`).
+
+A **scene** is a `main.js` that builds a `World` and adds a `Board`; the `Board` (extending [`Vignette`](src/code/Vignette.js)) owns the surface, the stripes, the UI, and the download action. See [`demos/momath-display/a/`](demos/momath-display/a/) for a representative example with a preset-board button bar.
 
 ## Dependencies
 

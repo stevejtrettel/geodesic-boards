@@ -6,7 +6,7 @@ import {
     PointLight
 } from "three";
 
-import Background from "../Background";
+import Background from "@/world/environment/background/Background";
 
 
 class BoxWithLights extends Background {

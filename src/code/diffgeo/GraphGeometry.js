@@ -2,11 +2,11 @@
 import {Vector2, Vector3} from "three";
 import { parse,simplify,derivative } from 'mathjs/number';
 
-import {fromMathJS} from "../utils/fromMathJS.js";
-import {toGLSL} from "../utils/toGLSL.js";
-import TransportIntegrator from "../integrators/TransportIntegrator.js";
+import {fromMathJS} from "@/code/utils/fromMathJS.js";
+import {toGLSL} from "@/code/utils/toGLSL.js";
+import TransportIntegrator from "@/code/integrators/TransportIntegrator.js";
 import DiffGeo from "./DiffGeo-Abstract.js";
-import RungeKutta from "../integrators/RungeKutta.js";
+import RungeKutta from "@/code/integrators/RungeKutta.js";
 
 
 

@@ -1,6 +1,6 @@
 /* SymplecticIntegrator4.js  -------------------------------------- */
 import { Vector2 }   from 'three';
-import TangentVector from "../diffgeo/TangentVector.js";
+import TangentVector from "@/code/diffgeo/TangentVector.js";
 
 
 /* ---------- helper: one velocity-Verlet step of length h -------- */

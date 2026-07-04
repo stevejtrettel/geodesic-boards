@@ -9,7 +9,7 @@ import {
 } from "three";
 
 
-import Background from "../Background";
+import Background from "@/world/environment/background/Background";
 
 class Floor extends Background{
     constructor() {

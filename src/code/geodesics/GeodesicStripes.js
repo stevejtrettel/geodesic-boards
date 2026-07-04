@@ -1,7 +1,7 @@
 import {Vector2} from "three";
 import GeodesicArray from "./GeodesicArray.js";
-import Curve from "../interpolators/Curve.js";
-import TangentVector from "../diffgeo/TangentVector.js";
+import Curve from "@/code/interpolators/Curve.js";
+import TangentVector from "@/code/diffgeo/TangentVector.js";
 
 let defaultProps = {
     pos: 0.5,

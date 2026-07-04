@@ -1,5 +1,5 @@
 import {Vector2} from "three";
-import TangentVector from "../diffgeo/TangentVector.js";
+import TangentVector from "@/code/diffgeo/TangentVector.js";
 import GeodesicArray from "./GeodesicArray.js";
 
 let defaultProps = {

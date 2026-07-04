@@ -1,6 +1,6 @@
 import CustomShaderMaterial from "three-custom-shader-material/vanilla";
 import {DoubleSide, MeshPhysicalMaterial} from "three";
-import defaultShader from "../shaders/defaultShader.glsl";
+import defaultShader from "@/code/shaders/defaultShader.glsl";
 
 export default class FragmentMaterial extends CustomShaderMaterial{
     constructor(fragmentShader = defaultShader, options={}) {

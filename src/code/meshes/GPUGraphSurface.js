@@ -16,7 +16,7 @@ import{ Vector2,Mesh,MeshPhysicalMaterial,PlaneGeometry, DoubleSide} from "three
 
 import CustomShaderMaterial from 'three-custom-shader-material/vanilla';
 
-import woodShader   from '../shaders/woodShader.glsl';   // fragment shader
+import woodShader   from '@/code/shaders/woodShader.glsl';   // fragment shader
 // If you want to swap colour maps, just pass a different frag shader.
 
 export default class GPUGraphSurface extends Mesh {

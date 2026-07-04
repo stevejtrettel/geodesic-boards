@@ -1,5 +1,5 @@
 import {MeshPhysicalMaterial, Mesh, DoubleSide} from "three";
-import NumericalSurfaceGeometry from "../geometries/NumericalSurfaceGeometry.js";
+import NumericalSurfaceGeometry from "@/code/geometries/NumericalSurfaceGeometry.js";
 
 let defaultMat = new MeshPhysicalMaterial({
     color:0xffffff,

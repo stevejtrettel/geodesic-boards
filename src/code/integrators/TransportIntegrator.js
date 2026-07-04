@@ -1,5 +1,5 @@
 import {Vector2} from "three";
-import {createCatmullRomVec} from "../interpolators/catmullRomVector.js";
+import {createCatmullRomVec} from "@/code/interpolators/catmullRomVector.js";
 
 
 export default class TransportIntegrator{

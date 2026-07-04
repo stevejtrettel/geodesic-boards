@@ -1,6 +1,6 @@
 import {Vector3, MathUtils,} from "three";
 import {Sky} from "three/addons";
-import Background from "../Background";
+import Background from "@/world/environment/background/Background";
 
 
 class SkyBox extends Background {

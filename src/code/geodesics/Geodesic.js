@@ -1,7 +1,7 @@
 
-import NumericalCurve from "../meshes/NumericalCurve.js";
+import NumericalCurve from "@/code/meshes/NumericalCurve.js";
 import {CatmullRomCurve3} from "three";
-import CatmullRomCurve2 from "../interpolators/CatmullRomCurve2.js";
+import CatmullRomCurve2 from "@/code/interpolators/CatmullRomCurve2.js";
 
 
 export default class Geodesic extends NumericalCurve{

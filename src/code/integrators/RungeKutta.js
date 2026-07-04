@@ -1,6 +1,6 @@
 /* GeodesicIntegrator.js ------------------------------------------- */
 import { Vector2 } from 'three';
-import TangentVector from "../diffgeo/TangentVector.js";
+import TangentVector from "@/code/diffgeo/TangentVector.js";
 
 export default class RungeKutta {
 

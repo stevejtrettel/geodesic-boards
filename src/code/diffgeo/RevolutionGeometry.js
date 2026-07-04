@@ -3,11 +3,11 @@ import {Vector2, Vector3} from "three";
 import { parse,simplify,derivative } from 'mathjs/number';
 
 import DiffGeo from "./DiffGeo-Abstract.js";
-import Symplectic2 from "../integrators/Symplectic2.js";
-import {fromMathJS} from "../utils/fromMathJS.js";
-import {toGLSL} from "../utils/toGLSL.js";
-import TransportIntegrator from "../integrators/TransportIntegrator.js";
-import {createCatmullRomVec} from "../interpolators/catmullRomVector.js";
+import Symplectic2 from "@/code/integrators/Symplectic2.js";
+import {fromMathJS} from "@/code/utils/fromMathJS.js";
+import {toGLSL} from "@/code/utils/toGLSL.js";
+import TransportIntegrator from "@/code/integrators/TransportIntegrator.js";
+import {createCatmullRomVec} from "@/code/interpolators/catmullRomVector.js";
 
 
 //curve equation is a pair [r,h] as functions of a variable u: [r,h]=[x,y] when rotating around y axis
